@@ -1,0 +1,8 @@
+create table hospital(
+    id int AUTO_INCREMENT,
+    red varchar(50),
+    nombre varchar(50),
+    telefono varchar(20),
+    direccion varchar(60),
+    PRIMARY key(id)
+)

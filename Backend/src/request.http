@@ -1,0 +1,178 @@
+GET http://localhost:3001/hospital/all HTTP/1.1
+###
+GET http://localhost:3001/hospital/buscar HTTP/1.1
+Content-Type: application/json
+
+{
+    "dato":"HOSPITAL UNIVERSITARIO LA PAZ"
+}
+
+
+
+###
+POST http://localhost:3001/hospital/insertar HTTP/1.1
+Content-Type: application/json
+
+{
+    "red": "red 1",
+    "nombre": "HOSPITAL UNIVERSITARIO LA PAZ",
+    "telefono": "767222",
+    "direccion": "Central sucre"
+}
+###
+
+DELETE  http://localhost:3001/hospital/borrar HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": 18
+}
+###
+
+PUT http://localhost:3001/hospital/editar HTTP/1.1
+Content-Type: application/json
+
+{
+    "id":22,
+    "red": "red 15",
+    "nombre": "HOSPITAL san pedro claver",
+    "telefono": "767222",
+    "direccion": "lajastambo"
+}
+###
+POST http://localhost:9000/insert HTTP/1.1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjMxMTYyMjUzLCJleHAiOjE2MzE3NjcwNTN9.YY4exh5fVu8b_D02fcmqNl0DYvMV1TagkKgcZRroHyE
+
+{
+    "ci": "13616196",
+    "nombre": "ABRAHAN",
+    "apellido1": "AGUILAR",
+    "apellido2": "TORRES",
+    "sexo": "M",
+    "fechaNac": "1997-08-06",
+    "celular": "7346834",
+    "telefono": "0000",
+    "id_mun": 1,
+    "direccion": "PALACIO TAMB Z/HOSPITAL MUNICIPAL"
+}
+
+
+###
+DELETE http://localhost:9000/eliminar HTTP/1.1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjMxMTYyMjUzLCJleHAiOjE2MzE3NjcwNTN9.YY4exh5fVu8b_D02fcmqNl0DYvMV1TagkKgcZRroHyE
+
+{
+    "id":155,
+    "ci": "13616196",
+    "nombre": "ABRAHAN",
+    "apellido1": "AGUILAR",
+    "apellido2": "TORRES",
+    "sexo": "M",
+    "fechaNac": "1997-08-06",
+    "celular": "7346834",
+    "telefono": "0000",
+    "id_mun": 1,
+    "direccion": "PALACIO TAMB Z/HOSPITAL MUNICIPAL"
+}
+
+###
+PUT http://localhost:9000/updated HTTP/1.1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjMxMTYyMjUzLCJleHAiOjE2MzE3NjcwNTN9.YY4exh5fVu8b_D02fcmqNl0DYvMV1TagkKgcZRroHyE
+
+{
+    "id":142,
+    "ci": "78726871",
+    "nombre": "WILMER",
+    "apellido1": "AGUILAR",
+    "apellido2": "TORRES",
+    "sexo": "M",
+    "fechaNac": "2001-01-03",
+    "celular": "7346834",
+    "telefono": "0000",
+    "id_mun": 1,
+    "direccion": "PALACION TAMBO Z/INTERNADO"
+}
+
+### 
+POST http://localhost:9000/login HTTP/1.1
+Content-Type: application/json
+###
+
+   
+POST  http://localhost:9000/red/registro HTTP/1.1
+Content-Type: application/json
+
+{
+    
+    "nombre":"red 5"
+}
+###
+POST   http://localhost:9000/ HTTP/1.1
+Content-Type: application/json
+
+{
+    
+    "user":"gust",
+    "pass":"81dc9bdb52d04dc20036dbd8313ed055"
+}
+
+
+###
+POST   http://localhost:9000/ HTTP/1.1
+Content-Type: application/json
+
+{
+    
+    "user":"juan",
+    "pass":"827ccb0eea8a706c4c34a16891f84e7b"
+}
+
+
+###
+POST  http://localhost:9000/red/lista HTTP/1.1        
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXN1YXJpbyI6Imd1c3QiLCJzaXN0ZW1hIjoiU0lTVEVNQSBTRUdMIiwibW9kdWxvIjoiU09MSUNJVFVEIEVYQU1FTkVTIERFIEdBQklORVRFIFkgU09MSUNJVFVEIERFIEVYQU1FTkVTIERFIExBQk9SQVRPUklPIFkgU0VSVklDSU8gREUgU0FOR1JFIFNFR1VSQSIsIm5pdmVsIjozLCJyb2wiOiJFTkNBUkdBRE8gVU5JREFEIERFIFNFUlZJQ0lPIiwiZ2VzdGlvbiI6MjAyMSwicGVyc29uYWwiOiJKVUFOIEpPU0UiLCJhcGVsbGlkbzEiOiJDQUhJV0FSQSIsImFwZWxsaWRvMiI6IlNBTlRPUyIsImFyZWEiOiJBRE1JTklTVFJBQ0lPTiIsInVuaWRhZCI6ImFkbWluaXN0cmF0aXZhIiwiY2VudHJvIjoiU0FOIFBFRFJPIENMQVZFUi0gTEFKQVNUQU1CTyIsImRpc3RyaXRvIjoiRElTVFJJVE8gMiIsIm11bmljaXBpbyI6Ik9ST1BFWkEiLCJyZWQiOiJSRUQgMSBTVUNSRSIsInRpZW1wbyI6MTMsImlhdCI6MTYzNDY4MTU4OCwiZXhwIjoxNjM0NzY3OTg4fQ.2vRZLMVF8aSoBohn-ikus9GgTCpuoNc3jk1VMdBp3jM
+
+{
+  "user":2
+}
+
+###
+POST http://localhost:9000/red/registro HTTP/1.1
+Content-Type: application/json
+# Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVrIjp0cnVlLCJpYXQiOjE2MzIwNzkwMDksImV4cCI6MTYzMjY4MzgwOX0.0AVXKsPDLDsj4Zl2fy2p3FCVPAHQLtFq7pAOIc2r4OY 11
+
+{
+    "user":1,
+    "nombre":"RED"
+}
+
+###
+POST http://localhost:9000/red/actualizar HTTP/1.1
+Content-Type: application/json
+Authorization:  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVrIjp0cnVlLCJpYXQiOjE2MzIzNzc0NzksImV4cCI6MTYzMjk4MjI3OX0.5DgZ4wfVLLSfSrETrgJtXQk1Lsmcfz96y2pB80BVdIU
+
+{
+    "id":"2",
+    "nombre":"RED 1 SUCRE"
+}
+
+###
+DELETE  http://localhost:9000/red/eliminar HTTP/1.1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVrIjp0cnVlLCJpYXQiOjE2MzIzNzc0NzksImV4cCI6MTYzMjk4MjI3OX0.5DgZ4wfVLLSfSrETrgJtXQk1Lsmcfz96y2pB80BVdIU
+
+{
+    "id":"13"
+}
+
+###
+GET  http://localhost:9000/red/lista HTTP/1.1
+Content-Type: application/json
+
+{
+    "id":"1"
+}
