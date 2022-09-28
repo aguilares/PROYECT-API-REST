@@ -1,62 +1,41 @@
 
 import pool from '../bdConfig.js'
 
-export class Hospital {
-    constructor(id, red, nombre, telefono, direccion) {
+export class Seguro {
+    constructor(id, nombre) {
         this._id = id;
-        this._red = red;
         this._nombre = nombre;
-        this._telefono = telefono;
-        this._direccion = direccion
     }
     //get
     get id() {
-        return this._id 
+        return this._id
     }
 
-    get red() {
-        return this._red
-    }
     get nombre() {
         return this._nombre
     }
-    get telefono() {
-        return this._telefono
-    }
-    get direccion() {
-        return this._direccion
-    }
-
     //set
-    set red(red) {
-        this._red = red
-    }
 
     set nombre(nombre) {
         this._nombre = nombre
     }
-    set telefono(telefono) {
-        this._telefono = telefono
-    }
-    set direccion(direccion) {
-        this._direccion = direccion
-    }
+
 
     // METODOS
     listar = async () => {
-        const [rows] = await pool.query("SELECT red, nombre, telefono, direccion FROM hospital")
+        const [rows] = await pool.query("SELECT id, nombre from seguro")
         return rows
     }
 
 
     insertar = async (datos) => {
         const sqlExists =
-            `SELECT * FROM hospital WHERE nombre = ${pool.escape(datos.nombre)}`;
+            `SELECT * FROM seguro WHERE nombre = ${pool.escape(datos.nombre)}`;
 
         const [result] = await pool.query(sqlExists)
 
         if (result.length === 0) {
-            const resultado = await pool.query("INSERT INTO hospital SET  ?", datos)
+            const resultado = await pool.query("INSERT INTO seguro SET  ?", datos)
             return resultado
         } else {
             return {
@@ -66,24 +45,21 @@ export class Hospital {
     }
 
     buscar = async (dato) => {
-        const sql = `SELECT red, nombre, telefono, direccion FROM hospital WHERE (nombre = ${pool.escape(dato)} 
-        or red = ${pool.escape(dato)})`;
+        const sql = `SELECT id, nombre FROM seguro
+        WHERE nombre = ${pool.escape(dato)}`;
         const [rows] = await pool.query(sql)
         return rows
     }
 
     editar = async (datos) => {
         const sqlExists =
-            `SELECT * FROM hospital WHERE nombre = ${pool.escape(datos.nombre)}`;
+            `SELECT * FROM seguro WHERE nombre = ${pool.escape(datos.nombre)}`;
 
         const [result] = await pool.query(sqlExists)
 
         if (result.length === 0) {
-            const sql = `UPDATE hospital SET
-            red = ${pool.escape(datos.red)},
+            const sql = `UPDATE seguro SET
             nombre = ${pool.escape(datos.nombre)},
-            telefono = ${pool.escape(datos.telefono)},
-            direccion = ${pool.escape(datos.direccion)},
             modificado = ${pool.escape(datos.modificado)},
             usuario = ${pool.escape(datos.usuario)}
             WHERE id = ${pool.escape(datos.id)}`;
@@ -91,19 +67,20 @@ export class Hospital {
             const [resultado] = await pool.query(sql);
             if(resultado.affectedRows === 0){
                 return {
-                    existe:0,
+                    existe:0
                 }
             }
             return resultado
         } else {
             return {
                 existe:1,
+                msg: "EL HOSPITAL YA ESTA REGISTRADO"
             }
         }
     }
 
     borrar = async (id) => {
-        const sql = `delete from hospital 
+        const sql = `delete from seguro 
         WHERE id =  ${pool.escape(id)}`;
         const [resultado] = await pool.query(sql)
         return resultado

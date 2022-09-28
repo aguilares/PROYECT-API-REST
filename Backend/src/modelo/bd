@@ -1,8 +1,89 @@
+create table seguro(
+    id int AUTO_INCREMENT,
+    nombre varchar(50),
+    creado datetime,
+    modificado datetime,
+    usuario int,
+    PRIMARY key(id)
+) 
 create table hospital(
     id int AUTO_INCREMENT,
     red varchar(50),
     nombre varchar(50),
     telefono varchar(20),
     direccion varchar(60),
+    creado datetime,
+    modificado datetime,
+    usuario int,
+    PRIMARY key(id),
+) 
+-- create table hospitalSeguro(
+--     id int AUTO_INCREMENT,
+--     idSeguro int,
+--     idHospital int,
+--     creado datetime,
+--     modificado datetime,
+--     usuario int,
+--     PRIMARY key(id),
+--     FOREIGN KEY (idSeguro) REFERENCES seguro(id),
+--     FOREIGN KEY (idHospital) REFERENCES hospital(id)
+-- )
+
+create table area(
+    id int AUTO_INCREMENT,
+    nombre varchar(50),
+    creado datetime,
+    modificado datetime,
+    usuario int,
+    PRIMARY key(id),
+)
+
+create table servicio(
+    id int AUTO_INCREMENT,
+    idArea int,
+    nombre varchar(100),
+    creado datetime,
+    modificado datetime,
+    usuario int,
+    PRIMARY key(id),
+    FOREIGN KEY(idArea) REFERENCES area (id)
+)
+create table itemservicio(
+    id int AUTO_INCREMENT,
+    idServicio int,
+    nombre varchar(100),
+    creado datetime,
+    modificado datetime,
+    usuario int,
+    PRIMARY key(id),
+    FOREIGN KEY(idServicio) REFERENCES servicio (id)
+)
+
+create table rol(
+    id int AUTO_INCREMENT,
+    nombre varchar(50),
+    numero int, 
+    creado datetime,
+    modificado datetime,
+    usuario int,
     PRIMARY key(id)
+)
+create table usuario(
+    id int AUTO_INCREMENT,
+    idServicio int,
+    idRol int,
+    username varchar(50),
+    pass varchar(50),
+    nombre varchar(100),
+    apellidoPaterno varchar(50),
+    apellidoMaterno varchar(50),
+    telefono varchar(20),
+    direccion varchar(60),
+    creado datetime,
+    modificado datetime,
+    usuario int,
+    PRIMARY key(id),
+    FOREIGN KEY(idServicio) REFERENCES servicio (id),
+    FOREIGN KEY(idRol) REFERENCES rol (id)
+
 )

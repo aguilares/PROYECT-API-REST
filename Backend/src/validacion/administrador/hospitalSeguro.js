@@ -2,36 +2,12 @@ import { check } from "express-validator"
 import { validaciones } from "../headers.js"
 
 export const insertar = [
-
-    check('idServicio')
+    check('idSeguro')
         .exists()
         .isLength({ min: 1 }).isNumeric(),
-    check('idRol')
+    check('idHospital')
         .exists()
         .isLength({ min: 1 }).isNumeric(),
-    check('username')
-        .isLength({ min: 4 })
-        .exists(),
-    check('pass')
-        .isLength({ min: 4 })
-        .exists(),
-    check('nombre')
-        .isLength({ min: 4 })
-        .exists(),
-    check('apellidoPaterno')
-        .isLength({ min: 4 })
-        .exists(),
-    check('apellidoMaterno')
-        .isLength({ min: 4 })
-        .exists(),
-    check('telefono')
-        .exists()
-        .isNumeric()
-        .isLength({ min: 4, max: 25 }),
-    check('direccion')
-        .exists()
-        .isString()
-        .isLength({ min: 5, max: 100 }),
     check('creado')
         .exists()
         .matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
@@ -48,32 +24,12 @@ export const editar = [
     check('id')
         .isLength({ min: 1 })
         .exists().isNumeric(),
-    check('idServicio')
+    check('idSeguro')
         .exists()
         .isLength({ min: 1 }).isNumeric(),
-    check('idRol')
+    check('idHospital')
         .exists()
-        .isLength({ min: 1 }).isNumeric(),
-    check('pass')
-        .isLength({ min: 4 })
-        .exists(),
-    check('nombre')
-        .isLength({ min: 4 })
-        .exists(),
-    check('apellidoPaterno')
-        .isLength({ min: 4 })
-        .exists(),
-    check('apellidoMaterno')
-        .isLength({ min: 4 })
-        .exists(),
-    check('telefono')
-        .exists()
-        .isNumeric()
-        .isLength({ min: 4, max: 25 }),
-    check('direccion')
-        .exists()
-        .isString()
-        .isLength({ min: 5, max: 100 }),
+        .isLength({ min: 1 }),
     check('modificado')
         .exists()
         .matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),

@@ -2,10 +2,12 @@ import Express from "express";
 
 // Admiministrador
 import hospital from "../controlador/administrador/hospital.js";
+import seguro from "../controlador/administrador/seguro.js";
+import hospitalseguro from '../controlador/administrador/hospitalSeguro.js'
 import area from "../controlador/administrador/area.js";
 import servicio from "../controlador/administrador/servicio.js";
 import itemServicio from "../controlador/administrador/itemServicio.js";
-import seguro from "../controlador/administrador/seguro.js";
+import rol from '../controlador/administrador/rol.js'
 import usuario from "../controlador/administrador/usuario.js"; 
 
 const rutas = Express();
@@ -19,10 +21,12 @@ rutas.get("/",(req,res)=>{
                                     // RUTAS DE LA APLICACION
 // ******************************************************** BLOQUE ADMINISTRADOR***************************
 rutas.use("/hospital",hospital)
+rutas.use("/seguro",seguro)
+rutas.use('/hospitalseguro', hospitalseguro)
 rutas.use("/area",area)
 rutas.use("/servicio",servicio)
-rutas.use("/itemServicio",itemServicio)
-rutas.use("/seguro",seguro)
+rutas.use("/itemservicio",itemServicio)
+rutas.use("/rol",rol)
 rutas.use("/usuario",usuario)
 
 // **********************************************************************************************************

@@ -3,35 +3,12 @@ import { validaciones } from "../headers.js"
 
 export const insertar = [
 
-    check('idServicio')
-        .exists()
-        .isLength({ min: 1 }).isNumeric(),
-    check('idRol')
-        .exists()
-        .isLength({ min: 1 }).isNumeric(),
-    check('username')
-        .isLength({ min: 4 })
-        .exists(),
-    check('pass')
-        .isLength({ min: 4 })
-        .exists(),
     check('nombre')
         .isLength({ min: 4 })
         .exists(),
-    check('apellidoPaterno')
-        .isLength({ min: 4 })
-        .exists(),
-    check('apellidoMaterno')
-        .isLength({ min: 4 })
-        .exists(),
-    check('telefono')
-        .exists()
-        .isNumeric()
-        .isLength({ min: 4, max: 25 }),
-    check('direccion')
-        .exists()
-        .isString()
-        .isLength({ min: 5, max: 100 }),
+    check('numero')
+        .isLength({ min: 1 })
+        .exists().isNumeric(),
     check('creado')
         .exists()
         .matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
@@ -43,37 +20,50 @@ export const insertar = [
         validaciones(req, res, next)
     }
 ]
-
 export const editar = [
     check('id')
         .isLength({ min: 1 })
         .exists().isNumeric(),
-    check('idServicio')
-        .exists()
-        .isLength({ min: 1 }).isNumeric(),
-    check('idRol')
-        .exists()
-        .isLength({ min: 1 }).isNumeric(),
-    check('pass')
-        .isLength({ min: 4 })
-        .exists(),
     check('nombre')
         .isLength({ min: 4 })
         .exists(),
-    check('apellidoPaterno')
+    check('modificado')
+        .exists()
+        .matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
+    check('usuario')
+        .exists()
+        .isLength({ min: 1 }).isNumeric(),
+
+    (req, res, next) => {
+        validaciones(req, res, next)
+    }
+]
+
+export const editarNombre = [
+    check('id')
+        .isLength({ min: 1 })
+        .exists().isNumeric(),
+    check('nombre')
         .isLength({ min: 4 })
         .exists(),
-    check('apellidoMaterno')
-        .isLength({ min: 4 })
-        .exists(),
-    check('telefono')
+    check('modificado')
         .exists()
-        .isNumeric()
-        .isLength({ min: 4, max: 25 }),
-    check('direccion')
+        .matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
+    check('usuario')
         .exists()
-        .isString()
-        .isLength({ min: 5, max: 100 }),
+        .isLength({ min: 1 }).isNumeric(),
+
+    (req, res, next) => {
+        validaciones(req, res, next)
+    }
+]
+export const editarNumero = [
+    check('id')
+        .isLength({ min: 1 })
+        .exists().isNumeric(),
+    check('numero')
+        .isLength({ min: 1 })
+        .exists().isNumeric(),
     check('modificado')
         .exists()
         .matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),

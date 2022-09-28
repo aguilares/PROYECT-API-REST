@@ -1,28 +1,24 @@
 import { Router } from "express"
-import { Hospital } from "../../modelo/administrador/hospital.js"
-import { insertar, editar, eliminar, buscar } from '../../validacion/administrador/hospital.js'
-
-//const modelo from "../modelo/usuario.js"
-// desde esta plantilla se importa las funcionalidades de los controladores de los modulos
+import { HospitalSeguro } from "../../modelo/administrador/hospitalSeguro.js"
+import { insertar, editar, eliminar, buscar } from '../../validacion/administrador/hospitalSeguro.js'
 
 
 const rutas = Router()
-const hospital = new Hospital()
+const hospitalSeguro = new HospitalSeguro()
 
 rutas.get("/all", async (req, res) => {
     try {
-        const resultado = await hospital.listar()
+        const resultado = await hospitalSeguro.listar()
         return res.status(200).json(resultado)
     } catch (error) {
         return res.status(500).send(error)
     }
-
 })
 
 rutas.get("/buscar", buscar, async (req, res) => {
     const dato = req.body.dato
     try {
-        const resultado = await hospital.buscar(dato)
+        const resultado = await hospitalSeguro.buscar(dato)
         if (resultado.length > 0) {
             return res.status(200).send(resultado)
         }
@@ -30,7 +26,7 @@ rutas.get("/buscar", buscar, async (req, res) => {
             return res.status(404).json({ msg: 'el hospital no existe' })
         }
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         return res.status(500).send(error)
     }
 
@@ -38,48 +34,48 @@ rutas.get("/buscar", buscar, async (req, res) => {
 
 rutas.post("/insertar", insertar, async (req, res) => {
 
-    const { red, nombre, telefono, direccion, creado, usuario } = req.body
+    const { idSeguro, idHospital, creado, usuario } = req.body
     const datos = {
-        red,
-        nombre,
-        telefono,
-        direccion,
+        idSeguro,
+        idHospital,
         creado,
         usuario
     }
     try {
 
-        const resultado = await hospital.insertar(datos)
+        const resultado = await hospitalSeguro.insertar(datos)
+
         if (resultado.existe === 1) {
             return res.status(403).json({ msg: 'ya existe el registro' })
         }
-        return res.status(200).json({msg:'OPERACION EXITOSA'})
+
+        return res.status(200).json({ msg: 'OPERACION EXITOSA' })
 
     } catch (error) {
+
+        // console.log(error)
         return res.status(500).send(error)
     }
 })
 
 rutas.put("/editar", editar, async (req, res) => {
 
-    const { id, red, nombre, telefono, direccion, modificado, usuario } = req.body
+    const { id, idSeguro, idHospital, modificado, usuario } = req.body
     const datos = {
         id,
-        red,
-        nombre,
-        telefono,
-        direccion,
+        idSeguro,
+        idHospital,
         modificado,
         usuario
     }
     try {
-        const resultado = await hospital.editar(datos)
-        if(resultado.existe === 0)
-            return res.status(404).json({ msg:'El area no existe'})
-        if(resultado.existe ===1 ){
-            return res.status(403).json({msg:'ya existe el registro'})
+        const resultado = await hospitalSeguro.editar(datos)
+        if (resultado.existe === 0)
+            return res.status(404).json({ msg: 'El area no existe' })
+        if (resultado.existe === 1) {
+            return res.status(403).json({ msg: 'ya existe el registro' })
         }
-        return res.status(200).json({msg:"OPERACION EXITOSA"})
+        return res.status(200).json({ msg: "OPERACION EXITOSA" })
 
     } catch (error) {
         // console.log(error)
@@ -91,15 +87,13 @@ rutas.put("/editar", editar, async (req, res) => {
 rutas.delete("/borrar", eliminar, async (req, res) => {
     try {
         const id = req.body.id;
-        const resultado = await hospital.borrar(id)
+        const resultado = await hospitalSeguro.borrar(id)
         if (resultado.affectedRows === 0)
-            return res.status(404).json({ msg: "EL HOSPITAL NO EXISTE" });
+            return res.status(404).json({ msg: "LA ASIGNACION NO EXISTE" });
         return res.status(200).json({ msg: "OPERACION EXITOSA" })
     } catch (error) {
         return res.status(500).send(error)
     }
-
 })
-
 
 export default rutas;

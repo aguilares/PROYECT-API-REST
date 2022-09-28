@@ -1,51 +1,54 @@
 
 import pool from '../bdConfig.js'
 
-export class ItemServicio {
-    constructor(id, idServicio, nombre) {
+export class HospitalSeguro {
+    constructor(id, idSeguro, idHospital) {
         this._id = id;
-        this._idServicio = idServicio;
-        this._nombre = nombre;
+        this._idSeguro = idSeguro;
+        this._idHospital = idHospital;
     }
     //get
     get id() {
         return this._id 
     }
 
-    get idServicio() {
-        return this._idServicio
+    get idSeguro() {
+        return this._idSeguro
     }
-    get nombre() {
-        return this._nombre
+    get idHospital() {
+        return this._idHospital
     }
 
     //set
-    set idServicio(idServicio) {
-        this._idServicio = idServicio
+    set idHospital(idHospital) {
+        this._idHospital = idHospital
     }
 
-    set nombre(nombre) {
-        this._nombre = nombre
+    set idSeguro(idSeguro) {
+        this._idSeguro = idSeguro
     }
 
 
     // METODOS
     listar = async () => {
         const sql =
-        `SELECT ise.id, ise.nombre as itemservicio,s.nombre as servicio 
-        FROM itemservicio ise inner join servicio s on ise.idServicio = s.id`;
+        `SELECT s.nombre as seguro, h.nombre as hospital FROM hospitalseguro hs 
+        inner join hospital h on hs.idHospital = h.id
+        inner join seguro s on hs.idSeguro = s.id`;
         const [rows] = await pool.query(sql)
         return rows
     }
 
 
     insertar = async (datos) => {
-        const sqlExists =`SELECT * FROM itemservicio WHERE nombre = ${pool.escape(datos.nombre)}`;
+        const sqlExists =
+            `SELECT * FROM hospitalseguro WHERE idSeguro = ${pool.escape(datos.idSeguro)}
+            and idHospital = ${pool.escape(datos.idHospital)}`;
 
         const [result] = await pool.query(sqlExists)
 
         if (result.length === 0) {
-            const resultado = await pool.query("INSERT INTO itemservicio SET  ?", datos)
+            const resultado = await pool.query("INSERT INTO hospitalseguro SET  ?", datos)
             return resultado
         } else {
             return {
@@ -56,22 +59,24 @@ export class ItemServicio {
 
     buscar = async (dato) => {
         const sql =
-        `SELECT ise.id, ise.nombre as itemservicio,s.nombre as servicio FROM itemservicio ise
-        inner join servicio s on ise.idServicio = s.id where ise.nombre =${pool.escape(dato)}`;
+        `SELECT s.nombre as seguro, h.nombre as hospital FROM hospitalseguro hs 
+        inner join hospital h on hs.idHospital = h.id
+        inner join seguro s on hs.idSeguro = s.id WHERE s.nombre = ${pool.escape(dato)}`;
         const [rows] = await pool.query(sql)
         return rows
     }
 
     editar = async (datos) => {
         const sqlExists =
-        `SELECT * FROM itemservicio WHERE nombre = ${pool.escape(datos.nombre)}`;
+        `SELECT * FROM hospitalseguro WHERE idSeguro = ${pool.escape(datos.idSeguro)}
+        and idHospital = ${pool.escape(datos.idHospital)}`;
 
         const [result] = await pool.query(sqlExists)
 
         if (result.length === 0) {
-            const sql = `UPDATE itemservicio SET
-            idServicio = ${pool.escape(datos.idServicio)},
-            nombre = ${pool.escape(datos.nombre)},
+            const sql = `UPDATE hospitalseguro SET
+            idSeguro = ${pool.escape(datos.idSeguro)},
+            idHospital = ${pool.escape(datos.idHospital)},
             modificado = ${pool.escape(datos.modificado)},
             usuario = ${pool.escape(datos.usuario)}
             WHERE id = ${pool.escape(datos.id)}`;
@@ -91,7 +96,7 @@ export class ItemServicio {
     }
 
     borrar = async (id) => {
-        const sql = `delete from itemservicio 
+        const sql = `delete from hospitalseguro 
         WHERE id =  ${pool.escape(id)}`;
         const [resultado] = await pool.query(sql)
         return resultado
