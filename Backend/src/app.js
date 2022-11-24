@@ -1,6 +1,9 @@
 import express from 'express'
 import {dirname,join} from 'path'
 import {fileURLToPath} from 'url'
+import path from 'path'
+import cors from 'cors'
+
 
 // mis modulos
 import rutas from "./vista/rutas.js"
@@ -11,20 +14,32 @@ import {PORT} from "./config.js"
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url))
 // console.log(__dirname)
-
-app.set("puerto", PORT)
-app.set(express.static(join(__dirname,"public")));
-
+// app.use(cors())
 
 app.use(express.urlencoded({ extended: false }))
-// le diremos a la API que recibirá archivos de tipo json
 app.use(express.json())
+app.set("puerto", PORT)
+// app.use(cors())
+// app.use(express.static(path.join(__dirname,"../imagenes")));
+// app.use(cors())
 
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+    next();
+});
+app.use(express.static(path.join(__dirname,"../imagenes")));
+
+app.disable('x-powered-by') // evita que el atacante sepa que 
+//ejecutamos express js como servidor
 app.use(rutas)
 
 
 
 app.listen(app.get("puerto"),()=>{
-    console.log("servidor corrinedo en: ", PORT)
+    console.log("servidor corriendo en: ", PORT)
 });
 

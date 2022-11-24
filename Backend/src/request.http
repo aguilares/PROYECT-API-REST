@@ -1,3 +1,57 @@
+GET http://localhost:9000/public/usuarioExiste HTTP/1.1
+Content-Type: application/json
+
+{
+    "username":"dnaskjsasdd",
+}
+
+###
+POST http://localhost:3001/paciente/insertar HTTP/1.1
+Content-Type: application/json
+
+{
+    "nombre":"WYLLI",
+    "apellidoPaterno":"FERNANDEX",
+    "apellidoMaterno":"LOERA",
+    "ci":6766333,
+    "fechaNac":"2022-09-28",
+    "sexo":"M",
+    "telefono":56333,
+    "direccion":"MEXICO TIJUANA",
+    "creado": "2022-09-28 16:25:14",
+    "usuario": 1
+}
+###
+POST  http://localhost:3001/verificar HTTP/1.1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjMxMTYyMjUzLCJleHAiOjE2MzE3NjcwNTN9.YY4exh5fVu8b_D02fcmqNl0DYvMV1TagkKgcZRroHyE
+
+
+###
+PUT http://localhost:3001/paciente/editar HTTP/1.1
+Content-Type: application/json
+
+{
+    "id":1,
+    "nombre":"FANNY",
+    "apellidoPaterno":"MORALES",
+    "apellidoMaterno":"PUMA",
+    "ci":56211112,
+    "fechaNac":"2022-09-28",
+    "sexo":"F",
+    "telefono":56333,
+    "direccion":"sucre bolivia",
+    "modificado": "2022-09-28 16:25:14",
+    "usuario": 1
+}
+###
+DELETE  http://localhost:3001/paciente/borrar HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": 4
+}
+###
 GET http://localhost:3001/usuario/all HTTP/1.1
 
 ###
