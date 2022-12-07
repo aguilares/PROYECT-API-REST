@@ -328,7 +328,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -351,7 +351,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol, s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemservicio ism on s.idItemServicio = ism.id
@@ -374,7 +374,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol, s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -392,7 +392,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol, s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -407,7 +407,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -423,7 +423,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol, s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -504,14 +504,15 @@ export class Solicitud {
 
     generarInformeS = async (dato) => {
         const sql =
-            `SELECT
+            `SELECT s.id, s.fecha,
             upper(concat(p.nombre ,' ', p.apellidoPaterno, ' ', p.apellidoMaterno)) as paciente, p.nhc, 					p.fechaNac, p.sexo, 
 			upper(concat(u.nombre," " ,u.apellidoPaterno," ", u.apellidoMaterno )) as solicitante,
-            s.numIdentificacionLab, s.fechaHoraObtMuestra,
+            s.fechaHoraPublicacionRes, s.numIdentificacionLab,
 
-            ism.nombre as prueba, ism.codigo, ism.encabezado, 
-            s.condicionPaciente, s.observacionLab, s.procedenciaMuestra, s.interpretacionResLab,
-			s.resultado, i.unidad, i.inferior, i.superior, i.intervalo, s.firma
+            
+            ism.nombre as prueba, ism.encabezado, ism.codigo,
+            s.procedenciaMuestra, s.condicionMuestra,s.condicionPaciente,  s.interpretacionResLab, s.farmacosPaciente, s.observacionLab, 
+			s.resultado, i.unidad,  i.intervalo, s.firma,i.metodologia
 
 
             FROM solicitud s 
@@ -520,8 +521,9 @@ export class Solicitud {
             inner join usuario u on s.idUsuarioSol = u.id
             inner join intervalo i on s.idIntervalo = i.id
             where s.codigoSol =  ${pool.escape(dato.codigoSol)}
-        	and s.publisher = true`;
+        	and s.publisher = true order BY ism.encabezado DESC`;
         const [rows] = await pool.query(sql)
+        // console.log(rows)
         if (rows.length > 0) {
             const sql = `UPDATE solicitud SET
             resultadoRecibido = true,
@@ -529,8 +531,10 @@ export class Solicitud {
             WHERE codigoSol = ${pool.escape(dato.codigoSol)}`;
 
             const [resultado] = await pool.query(sql);
+            const sql_  = `Select red, nombre, direccion, telefono from hospital`;
+            const hospital = await pool.query(sql_)
             if (resultado.affectedRows > 0) {
-                return rows
+                return [rows, hospital]
             }
         }
     }
@@ -544,20 +548,11 @@ export class Solicitud {
 
 
 
-
-
-
-
-
-
-
-
-
-    verSolicitudL = async (dato) => {
+    verSolicitud = async (dato) => {
         // console.log('ver solicitud',dato)
 
         const sql =
-            `SELECT s.id, DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha, s.horaSol,
+            `SELECT  DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha, s.horaSol,
             idPaciente, p.ci,DATE_FORMAT(p.fechaNac, "%Y-%m-%d") as fechaNac, p.sexo,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,
             p.nhc, s.codigoSol,s.resultadoRecibido, s.estado, s.fechaHoraAutorizacion,
@@ -565,12 +560,9 @@ export class Solicitud {
             s.diagnostico,
             
             upper(concat(u.nombre, " ",u.apellidoPaterno, " " , u.apellidoMaterno)) as solicitante,
-            item.id as idItemServicio, item.nombre as servicioSolicitado, item.encabezado, item.codigo
+            item.id as idItemServicio, item.nombre as servicioSolicitado, item.encabezado,
             ser.id as idServicio, 
-            seg.id as idSeguro, seg.nombre as seguro,
-            s.numMuestra, s.procedenciaMuestra, s.fechaHoraObtMuestra, s.numIdentificacionLab,
-            s.resultado, s.interpretacionResLab, s.condicionMuestra, s.	condicionPaciente,
-            s.farmacosPaciente, s.observacionLab
+            seg.id as idSeguro, seg.nombre as seguro
             
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
@@ -585,6 +577,14 @@ export class Solicitud {
         // console.log('model ver solitud. ',rows)
         return rows
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -623,7 +623,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on item.id = s.idItemServicio
@@ -637,9 +637,11 @@ export class Solicitud {
     autorizarSolicitud = async (dato) => {
         // console.log(dato)
         const sql = `UPDATE solicitud SET
-        idUsuarioAdmin = ${pool.escape(dato.usario)},
+        idUsuarioAdmin = ${pool.escape(dato.usuario)},
+
         estado = true,
-        fechaHoraAutorizacion = ${pool.escape(dato.fecha)}
+        fechaHoraAutorizacion = ${pool.escape(dato.fecha)},        
+        firma = "${dato.sello}"
         WHERE codigoSol = ${pool.escape(dato.codigoSol)}`;
         await pool.query(sql);
         // console.log(await this.verSolicitud(dato.codigoSol))
@@ -648,6 +650,7 @@ export class Solicitud {
     eliminarA = async (dato) => {
         // console.log(dato)
         const sql = `UPDATE solicitud SET
+        idUsuarioAdmin = ${pool.escape(dato.usuario)},
         observacion = ${pool.escape(dato.observacion)},
         eliminar = true
         WHERE codigoSol = ${pool.escape(dato.codigoSol)}`;
@@ -661,7 +664,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol,s.resultadoRecibido, s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemservicio ism on s.idItemServicio = ism.id
@@ -683,7 +686,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol,s.resultadoRecibido, s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -700,7 +703,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -714,7 +717,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -729,7 +732,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
             upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab, s.publisher
+            p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
             inner join itemServicio item on s.idItemServicio = item.id
@@ -760,13 +763,13 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
         upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-        p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+        p.nhc,s.codigoSol,s.estado, s.recibidoLab, s.resultadoRecibido
         FROM solicitud s 
         inner join paciente p on s.idPaciente = p.id
         inner join itemservicio item on s.idItemServicio = item.id
         inner join servicio se on item.idServicio = se.id
         WHERE s.eliminar = false and 
-        se.id = ${pool.escape(servicio)}  and item.encabezado = true
+        se.id = ${pool.escape(servicio)}  and item.encabezado = true and s.estado = 1
         GROUP BY s.codigoSol order by s.id DESC  LIMIT 10`;
         const [rows] = await pool.query(sql)
         // console.log(rows)
@@ -788,7 +791,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
         upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-        p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+        p.nhc,s.codigoSol, s.resultadoRecibido, s.estado,s.recibidoLab
         FROM solicitud s 
         inner join paciente p on s.idPaciente = p.id
         inner join itemservicio ism on s.idItemServicio = ism.id
@@ -811,7 +814,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
         upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-        p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+        p.nhc,s.codigoSol,s.resultadoRecibido, s.estado,s.recibidoLab
         FROM solicitud s 
         inner join paciente p on s.idPaciente = p.id
         inner join itemservicio ism on s.idItemServicio = ism.id
@@ -829,7 +832,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
         upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-        p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+        p.nhc,s.codigoSol, s.estado, s.recibidoLab, s.resultadoRecibido
         FROM solicitud s 
         inner join paciente p on s.idPaciente = p.id
         inner join itemservicio ism on s.idItemServicio = ism.id
@@ -844,7 +847,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
         upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-        p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+        p.nhc,s.codigoSol, s.estado, s.recibidoLab, s.resultadoRecibido
         FROM solicitud s 
         inner join paciente p on s.idPaciente = p.id
         inner join itemservicio ism on s.idItemServicio = ism.id
@@ -860,7 +863,7 @@ export class Solicitud {
         const sql =
             `SELECT  COUNT(*) as cantidad, s.id,DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha,p.ci,
         upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,s.diagnostico,
-        p.nhc,s.codigoSol, s.estado,s.recibidoLab, s.publisher
+        p.nhc,s.codigoSol, s.estado, s.recibidoLab, s.resultadoRecibido
         FROM solicitud s 
         inner join paciente p on s.idPaciente = p.id
         inner join itemservicio ism on s.idItemServicio = ism.id
@@ -872,21 +875,27 @@ export class Solicitud {
         return rows
     }
 
+
+
     verSolicitudL = async (dato) => {
         // console.log('ver solicitud',dato)
 
         const sql =
-            `SELECT  DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha, s.horaSol,
+            `SELECT i.id as intervalo,i.descripcion, s.id, DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha, s.horaSol,
             idPaciente, p.ci,DATE_FORMAT(p.fechaNac, "%Y-%m-%d") as fechaNac, p.sexo,
-            upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente,
-            p.nhc, s.codigoSol,s.resultadoRecibido, s.estado, s.fechaHoraAutorizacion,
-            s.recibidoLab,s.fechaRecLab,s.horaRecLab, s.fechaGenInforme,s.fechaHoraPublicacionRes, s.publisher,
+            upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente, p.ci,
+            p.nhc, s.codigoSol,s.resultadoRecibido,  s.fechaHoraAutorizacion,
+            s.fechaRecLab,s.horaRecLab, s.fechaGenInforme,s.fechaHoraPublicacionRes, s.publisher,s.resultadoRecibido,
             s.diagnostico,
             
             upper(concat(u.nombre, " ",u.apellidoPaterno, " " , u.apellidoMaterno)) as solicitante,
-            item.id as idItemServicio, item.nombre as servicioSolicitado, item.encabezado,
+            item.id as idItemServicio, item.nombre as servicioSolicitado, item.encabezado, item.codigo,
             ser.id as idServicio, 
-            seg.id as idSeguro, seg.nombre as seguro
+            seg.id as idSeguro, seg.nombre as seguro,
+            s.numMuestra, s.procedenciaMuestra, s.fechaHoraObtMuestra, s.numIdentificacionLab,
+            s.resultado, s.interpretacionResLab, s.condicionMuestra, s.	condicionPaciente,
+            s.farmacosPaciente, s.observacionLab, s.fechaAnalisis,
+            se.nombre as servicio
             
             FROM solicitud s 
             inner join paciente p on s.idPaciente = p.id
@@ -895,11 +904,81 @@ export class Solicitud {
             inner join itemservicio item on s.idItemServicio = item.id
             inner join servicio ser on item.idServicio = ser.id
             inner join seguro seg on s.idSeguro = seg.id
-            WHERE s.codigoSol = ${pool.escape(dato)}`;
+            inner join servicio se on item.idServicio = se.id
+            LEFT join  intervalo i on s.idIntervalo = i.id
+            WHERE s.codigoSol = ${pool.escape(dato)} order by s.id ASC`;
         const [rows] = await pool.query(sql)
-
-        // console.log('model ver solitud. ',rows)
+    //   console.log(rows,'modelo')
         return rows
     }
+
+    verSolicitudUpdate = async (dato) => {
+        // console.log('ver solicitud',dato)
+
+        const sql =
+            `SELECT i.id as intervalo,i.descripcion, s.id, DATE_FORMAT(s.fecha, "%Y-%m-%d") as fecha, s.horaSol,
+            idPaciente, p.ci,DATE_FORMAT(p.fechaNac, "%Y-%m-%d") as fechaNac, p.sexo,
+            upper(concat(p.nombre, " ",p.apellidoPaterno, " " , p.apellidoMaterno)) as paciente, p.ci,
+            p.nhc, s.codigoSol,s.resultadoRecibido,  s.fechaHoraAutorizacion,
+            s.fechaRecLab,s.horaRecLab, s.fechaGenInforme,s.fechaHoraPublicacionRes, s.publisher,s.resultadoRecibido,
+            s.diagnostico,
+            
+            upper(concat(u.nombre, " ",u.apellidoPaterno, " " , u.apellidoMaterno)) as solicitante,
+            item.id as idItemServicio, item.nombre as servicioSolicitado, item.encabezado, item.codigo,
+            ser.id as idServicio, 
+            seg.id as idSeguro, seg.nombre as seguro,
+            s.numMuestra, s.procedenciaMuestra, s.fechaHoraObtMuestra, s.numIdentificacionLab,
+            s.resultado, s.interpretacionResLab, s.condicionMuestra, s.	condicionPaciente,
+            s.farmacosPaciente, s.observacionLab, s.fechaAnalisis,
+            se.nombre as servicio
+            
+            FROM solicitud s 
+            inner join paciente p on s.idPaciente = p.id
+            inner join usuario u on s.idUsuarioSol = u.id
+            
+            inner join itemservicio item on s.idItemServicio = item.id
+            inner join servicio ser on item.idServicio = ser.id
+            inner join seguro seg on s.idSeguro = seg.id
+            inner join servicio se on item.idServicio = se.id
+            LEFT join  intervalo i on s.idIntervalo = i.id
+            WHERE s.codigoSol = ${pool.escape(dato.codigoSol)} order by s.id ASC`;
+        const [rows] = await pool.query(sql)
+        if(rows.length>0){
+            const sql = `UPDATE solicitud SET
+            recibidoLab = true,
+            idUsuarioLab  = ${pool.escape(dato.usuario)},
+            fechaRecLab = ${pool.escape(dato.fecha)},
+            horaRecLab = ${pool.escape(dato.fecha)}
+            WHERE codigoSol = ${pool.escape(dato.codigoSol)}`;
+
+            const [resultado] = await pool.query(sql);
+            if (resultado.affectedRows > 0) {
+                return rows
+            }
+        }
+    }
+
+    guardarResutados = async (solicitud, usuario, fechaHoraPublicacionRes) => {
+
+        const sql = `UPDATE solicitud SET
+            idUsuarioLab  = ${pool.escape(usuario)},
+            idIntervalo = ${pool.escape(solicitud.intervalo)},
+            numMuestra = ${pool.escape(solicitud.numMuestra)},
+            fechaAnalisis = ${pool.escape(solicitud.fechaAnalisis)},
+            procedenciaMuestra = ${pool.escape(solicitud.procedenciaMuestra)},
+            numIdentificacionLab = ${pool.escape(solicitud.numIdentificacionLab)},
+            resultado = ${pool.escape(solicitud.resultado)},
+            interpretacionResLab = ${pool.escape(solicitud.interpretacionResLab)},
+            condicionMuestra = ${pool.escape(solicitud.condicionMuestra)},
+            condicionPaciente = ${pool.escape(solicitud.condicionPaciente)},
+            farmacosPaciente = ${pool.escape(solicitud.farmacosPaciente)},
+            observacionLab = ${pool.escape(solicitud.observacionLab)},
+            fechaHoraPublicacionRes = ${pool.escape(fechaHoraPublicacionRes)},
+            publisher = true
+            WHERE id = ${pool.escape(solicitud.id)} and resultadoRecibido = false`;
+        const final = await pool.query(sql);
+        return final
+    }
+
 
 }

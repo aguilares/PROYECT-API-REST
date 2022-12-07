@@ -4,6 +4,7 @@ import pool from './bdConfig.js'
 export class Intervalo {
 
     listar = async (id) => {
+        // console.log(id)
         const sql =
             `
             SELECT i.id,i.descripcion FROM intervalo i
@@ -14,6 +15,21 @@ export class Intervalo {
         const [rows] = await pool.query(sql)
         return rows
     }
+
+
+    listarPorCodigo = async (codigo) => {
+        // console.log(codigo)
+        const sql =
+            `
+            SELECT item.id as idItemServicio, i.id,i.descripcion FROM intervalo i
+            inner join itemservicio item on i.idItemServicio = item.id
+            where item.codigo = ${pool.escape(codigo)} and estado = false
+            `;
+
+        const [rows] = await pool.query(sql)
+        return rows
+    }
+
     ver = async (id) => {
         const sql =
             `

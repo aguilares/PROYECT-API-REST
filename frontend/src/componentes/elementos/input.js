@@ -3,18 +3,14 @@ import {
     ContenedorCheck2, Label, ContenedorCheckSimple
 } from './estilos';
 
-
-
 import React from 'react';
 
-// import { DatePicker } from '@material-ui/pickers';
 
-// import { makeStyles } from '@material-ui/styles';
-
-import { Button } from 'reactstrap';
+import { Button, Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer'
+import { faPrint, faSearch, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import ReactPrint from 'react-to-print'
+import { useRef } from 'react'
 
 
 import './my_style.css';
@@ -106,6 +102,7 @@ const InputUsuario = ({ estado, cambiarEstado, tipo, name, placeholder, Expresio
                     onKeyUp={validacion} //se ejecuta cuando dejamos de presionar la tecla
                     onBlur={validacion}  //si presionamos fuera del input
                     valido={estado.valido}
+                    style={{ fontSize: '12px', height: '20px' }}
                 />
 
                 <div className="input-group-append">
@@ -356,6 +353,7 @@ const Select1 = ({ estado, cambiarEstado, Name, ExpresionRegular, lista, funcion
 }
 
 
+
 const SelectRow = ({ estado, cambiarEstado, Name, ExpresionRegular, lista, funcion, funcion2, etiqueta }) => {
 
     const onChange = (e) => {
@@ -460,7 +458,53 @@ const ComponenteInputfecha = ({ estado, cambiarEstado, name, ExpresionRegular, e
                 id={name}
                 name={name}
                 expresionRegular={ExpresionRegular}
-                min = '1900-12-12'
+                min='1900-12-12'
+                // placeholder={placeholder}
+                value={estado.campo || ''}
+                onChange={onChange}
+                onKeyUp={validacion} //se ejecuta cuando dejamos de presionar la tecla
+                onBlur={validacion}  //si presionamos fuera del input
+                valido={estado.valido}
+                toUpperCase
+            />
+        </div>
+    )
+}
+
+
+
+
+const ComponenteInputfechaRow = ({ estado, cambiarEstado, name, ExpresionRegular, etiqueta }) => {
+
+    // 
+    const onChange = (e) => {
+        cambiarEstado({ ...estado, campo: e.target.value.toUpperCase() }) // cambiarEstado({ ...estado, campo: e.target})
+        // console.log(estado)
+    }
+
+    const validacion = () => {
+        if (ExpresionRegular) {
+            if (ExpresionRegular.test(estado.campo)) {
+                cambiarEstado({ ...estado, valido: 'true' })  //el valor del campo valido, debe ser una cadena 
+            }
+            else {
+                cambiarEstado({ ...estado, valido: 'false' })
+            }
+        }
+        // console.log("fechas: ", estado)
+
+    }
+
+    return (
+        <div className="fieldRow" >
+            <label>{etiqueta}</label>
+            <Inputfecha
+                type='date'
+                className="form-control form-control-sm"
+                id={name}
+                name={name}
+                expresionRegular={ExpresionRegular}
+                min='1900-12-12'
                 // placeholder={placeholder}
                 value={estado.campo || ''}
                 onChange={onChange}
@@ -999,7 +1043,9 @@ const ComponenteInputCampo = ({ estado, cambiarEstado, name, placeholder, Expres
 
 
 
-const GenerarPdf = ({ informe }) => {
+const GenerarPdf = ({ informe, setEstado, volver, lab }) => {
+    // console.log(lab[0][0].red, 'laboratorio')
+    const ref = useRef()
     let hoy = new Date()
     let antes = new Date(informe[0].fechaNac) // formato: yyyy-MM-dd
     let edad1 = hoy.getFullYear() - antes.getFullYear()
@@ -1007,97 +1053,120 @@ const GenerarPdf = ({ informe }) => {
     if (mes < 0 || (mes === 0 && hoy.getDate() < antes.getDate())) {
         edad1--
     }
-
-    const styles = StyleSheet.create({
-        page: {
-            flexDirection: 'row',
-            backgroundColor: '#C0C0C0'
-
-        },
-        section: {
-            margin: 10,
-            padding: 10,
-            flexGrow: 1,
-        },
-
-        titulo: {
-            color: '#3388af',
-            fontSize: '14px',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center'
-        },
-
-        referencia: {
-            color: '#3388af',
-            fontSize: '10px',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingTop: '10px', paddingBottom: "5px"
-        },
-        encabezado: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'left',
-            alignItems: 'left',
-            padding: "5px",
-            flexGrow: 1,
-            marginBottom: '20px'
-        },
-        texto: {
-            fontSize: '10px',
-            marginBottom: '8px'
-        },
-
-        contenerdorImagen: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: "5px",
-            flexGrow: 1,
-        },
-
+    let data = []
+    let codigos = []
+    informe.forEach(element => {
+        data.push(element.codigo)
     });
-    let obtMuetra = '.........'
-    let numero = '..........'
-    if (informe[0].fechaHoraObtMuestra !== null)
-        obtMuetra = informe[0].fechaHoraObtMuestra.split('T')[0]
-    if (informe[0].numIdentificacionLab !== null)
-        numero = informe[0].numIdentificacionLab
+    codigos = data.filter((item, index) => {
+        return data.indexOf(item) === index
+    })
 
     return (
-        <Document style={styles.page}>
-            <Page size='A4' style={styles.section}>
+        <div className='row mt-3' style={{ background: 'white' }} >
+            <div ref={ref} className='page col-10' style={{ paddingLeft: '100px', paddingRight: '0px', background: 'white' }}>
+                <div className='title' style={{ padding: '5px' }}>
+                    <img src="dist/img/sp.png" alt="perfil" className="img-circle elevation-4" style={{ width: '50px', height: '50px', marginRight: '5px' }} />
+                    <label>LABORATORIO DE ANALISIS CLINICO</label>
+                </div>
+                <div style={{ fontSize: '15px', textAlign: 'center', margin: '20px' }}>Resultados siempre confiables</div>
+                <div style={{ fontSize: '12px', textAlign: 'center', margin: '10' }}>DATOS DEL PACIENTE</div>
+                <div className='row'>
+                    <div className='col-7'>
+                        <div style={{ height: '20px' }} ><label className='subtitulo'>Nombre  </label><label style={{ fontSize: '12px' }}>{': ' + informe[0].paciente}</label></div>
+                        <div style={{ height: '20px' }}><label className='subtitulo'>Fecha de Nacimiento  </label><label style={{ fontSize: '12px' }}>{': ' + informe[0].fechaNac.split('T')[0]}</label></div>
+                        <div style={{ height: '20px' }}><label className='subtitulo'> Edad  </label><label style={{ fontSize: '12px' }}>{': ' + edad1 + ' años'}</label></div>
+                        <div style={{ height: '20px' }}><label className='subtitulo'> Sexo  </label><label style={{ fontSize: '12px' }}>{': ' + informe[0].sexo}</label></div>
+                        <div style={{ height: '20px' }}><label className='subtitulo'> Medico  </label><label style={{ fontSize: '12px' }}>{': ' + informe[0].solicitante}</label></div>
+                    </div>
+                    <div className='col-5'>
+                        <div style={{ height: '20px' }} ><label className='subtitulo'> Fecha Registro  </label><label style={{ fontSize: '12px' }}>{': ' + informe[0].fechaHoraPublicacionRes.split('T')[0]}</label></div>
+                        <div style={{ height: '20px' }}><label className='subtitulo'> Numero de muestra  </label><label style={{ fontSize: '12px' }}>{': ' + informe[0].numIdentificacionLab}</label></div>
+                    </div>
+                </div>
 
-                <View style={styles.titulo} >
-                    <Text> {'LABORATORIO HOSPITAL SAN PEDRO CLAVER LAJASTAMBO'}</Text>
-                </View>
-                <View style={styles.encabezado}>
-                    <Text style={styles.referencia}> {'Datos del cliente'}  </Text>
-                    <Text style={styles.texto}> {'NOMBRE Y APELLIDO :  ' + informe[0].paciente} </Text>
-                    <Text style={styles.texto}>{'Sexo: ' + informe[0].sexo + '             Edad :   ' + edad1 + '            Fecha de nacimiento:  ' + informe[0].fechaNac.split('T')[0]} </Text>
-                    <Text style={styles.texto}>{'NUMERO HISTORIAL CLINICO  : ' + informe[0].nhc + '                              Médico Solicitante  :  ' + informe[0].solicitante} </Text>
-                    <Text style={styles.texto}>{'ID/LAB    REF./LAB  : ' + numero + '                     Fecha  :  ' + obtMuetra} </Text>
+                <div className="card-body table table-responsive mt-3" style={{ padding: '0px' }}>
+                    <div style={{ height: '20px' }}><p className='subtitulo'> Servicios Solicitados </p></div>
 
-                    <Text style={styles.referencia}> Resultado</Text>
-                    {/* {solicitud.item.map((item) => (
-                        <Text>  {item.nombreExamen + ' | ' + item.grupo} </Text>
-                    ))} */}
-                </View>
+                    <Table id="example12" className=" table table-sm">
+                        <thead style={{ color: '#006572', background: 'white' }}>
+                            <tr >
+                                <th className="col-4 ">PARAMETRO</th>
+                                <th className="col-2 ">RESULTADO</th>
+                                <th className="col-2 ">UNIDAD</th>
+                                <th className="col-4 ">INDICE DE REFERENCIA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {codigos.map(cod => (
+                                informe.map(e => (
+                                    cod === e.codigo &&
+                                    <>
+                                        {e.encabezado === 1 ?
+                                            <tr style={{ margin: '0px', padding: '0px', color: '#006572', fontSize: '14px' }} key={e.id}>
+                                                <td style={{ margin: '2px', padding: '2px' }} className="col-4 ">{e.prueba}</td>
+                                                <td style={{ margin: '2px', padding: '2px' }} className="col-2 ">{e.resultado}</td>
+                                                <td style={{ margin: '2px', padding: '2px' }} className="col-2 ">{e.unidad ? e.unidad : 'No adminite'}</td>
+                                                <td style={{ margin: '2px', padding: '2px' }} className="col-4 ">{e.intervalo ? e.intervalo : 'No admite'}</td>
+                                            </tr> :
+                                            <tr style={{ margin: '0px', padding: '0px' }} key={e.id}>
+                                                <td style={{ margin: '2px', padding: '2px' }} className="col-4 ">{e.prueba}</td>
+                                                <td style={{ margin: '2px', padding: '2px' }} className="col-2 ">{e.resultado}</td>
+                                                <td style={{ margin: '2px', padding: '2px' }} className="col-2 ">{e.unidad ? e.unidad : 'No adminite'}</td>
+                                                <td style={{ margin: '2px', padding: '2px' }} className="col-4 ">{e.intervalo ? e.intervalo : 'No admite'}</td>
+                                            </tr>
+                                        }
+                                    </>
+                                ))
+                            ))}
+                        </tbody>
+                    </Table>
+                </div>
+                {codigos.map(cod => (
+                    informe.map(e => (
+                        cod === e.codigo && e.encabezado === 1 &&
+                        <div key={e.id}>
+                            <p style={{ color: '#006572', fontSize: '14px', margin: '2px', padding: '2px', paddingTop: '15px' }}>{e.prueba}</p>
+                            {e.metodologia && <p style={{ fontSize: '11px', margin: '2px', padding: '2px' }}>{'Método : ' + e.metodologia}</p>}
+
+                            {
+                                (e.procedenciaMuestra || e.condicionMuestra || e.condicionPaciente || e.farmacosPaciente || e.interpretacionResLab || e.observacionLab) ?
+                                    <div>
+                                        {e.procedenciaMuestra && <p style={{ fontSize: '12px', margin: '2px', padding: '2px' }}>{'Procedencia de la Muestra  : ' + e.procedenciaMuestra}</p>}
+                                        {e.condicionMuestra && <p style={{ fontSize: '12px', margin: '2px', padding: '2px' }}>{'Condicion de la Muestra  : ' + e.condicionMuestra}</p>}
+                                        {e.condicionPaciente && <p style={{ fontSize: '12px', margin: '2px', padding: '2px' }}>  {'Condiciones del Paciente : ' + e.condicionPaciente}</p>}
+                                        {e.farmacosPaciente && <p style={{ fontSize: '12px', margin: '2px', padding: '2px' }}>{'farmacos del paceinte del Paciente : ' + e.farmacosPaciente}</p>}
+                                        {e.interpretacionResLab && <p style={{ fontSize: '12px', margin: '2px', padding: '2px' }}>{'Interpretacion de los resultados: ' + e.interpretacionResLab}</p>}
+                                        {e.observacionLab && <p style={{ fontSize: '12px', margin: '2px', padding: '2px' }}> {' Otras observaciones : ' + e.observacionLab}</p>}
+                                    </div> :
+                                    <p style={{ fontSize: '12px', margin: '2px', padding: '2px' }}> {'Sin detalles'}</p>
+                            }
+                        </div>
+                    ))
+                ))}
+
+                <div  style={{ textAlign: 'right' }}>
+                    
+                    {informe[0].firma && <img src={URL + '/' + informe[0].firma} alt="frima concedida por El laboratorio de San Pedro Claver" style={{ width: '170px', fontSize: '10', height: '170px', margin: '30px' }} />}
+                </div>
 
 
-                <View style={styles.contenerdorImagen}>
-                    <Image
-                        src={URL + '/' + informe[0].firma}
-                        alt='random Image'
-                        style={{ width: '90px', height: '10vh' }}
-                    />
 
-                </View>
-            </Page >
-        </Document >
+                <div className='mt-4' style={{ fontSize: '15px' }}><label className='subtitulo'>IMPORTANTE: Los resultados incluidos en este reporte no sustituyen la consulta médica. Para una interpretación adecuada,
+                    es necesario que un médico los revise y coleccione con información clínica (signos, síntomas, antecedentes) y la obtenida de
+                    otras pruebas complementarias. </label>
+                </div>
+
+                <div style={{ height: '20px', fontSize: '12px', color: '#757575', marginTop: '40px', fontFamily: 'Verdana' }}><p > {lab[0][0].red + '  -  ' + lab[0][0].nombre} </p></div>
+                <div style={{ height: '20px', fontSize: '12px', color: '#757575', marginTop: '0px', fontFamily: 'Verdana' }}><p > {lab[0][0].direccion + '   ' + lab[0][0].telefono} </p></div>
+            </div>
+            <div className='col-1 check-r'>
+                <div className='row contendorButton'>
+                    <button className='mt-3 cancelar' onClick={() => { setEstado(false); volver(true) }}><FontAwesomeIcon icon={faAngleLeft} /> </button>
+                    <ReactPrint trigger={() => <button className='mt-3 autorizar'><FontAwesomeIcon icon={faPrint} /> </button>} content={() => ref.current} documentTitle={informe[0].fecha.split('T')[0] + '_' + informe[0].paciente} />
+                </div>
+            </div>
+        </div >
     )
 }
 
@@ -1115,6 +1184,9 @@ export {
     ComponenteInputFile,
     GenerarPdf,
     VerDependientes,
+    ComponenteInputfechaRow,
+
+
 
 
 

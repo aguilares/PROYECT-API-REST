@@ -71,14 +71,12 @@ const InputTabla = styled.input`
 
 
 
+
+
 const InputArea = styled.textarea` 
 
-
-
-
-
     width:100%;
-    height: 10px;
+    height: 25px;
     font-size: 12px;
     padding: 0 0px 0 0px;  //campos donde va abarcar el texto dentro del input
     transition: .3s ease all;
@@ -199,6 +197,17 @@ const Label = styled.div`
     padding: 0 0px 0 0px;  //campos donde va abarcar el texto dentro del input {-, DERECHA,-,-}
     font-family: Arial, Helvetica, sans-serif;
     // text-align: left;
+    text-align: center;
+
+
+`;
+const RegistraResultados = styled.div`
+
+    width:100%;
+    height: 13px;
+    font-size: 12px;
+    padding: 0 0px 0 0px;  //campos donde va abarcar el texto dentro del input {-, DERECHA,-,-}
+    font-family: Arial, Helvetica, sans-serif;
     text-align: center;
 
 
@@ -489,5 +498,5 @@ export {
     grupoInput, Input, InputTabla, Inputfecha, Select, LeyendaError, IconoValidacion, ContenedorCheck, ContenedorCheck2, ContenedorBotonCentrado,
     ContenedorMensajeExito, ContenedormensajeError,
     IconoValidacionCampos, IconoValidacionCamposBuscar, IconoValidacionCamposSelect, IconoValidacionSelect, IconoValidacionfecha,
-    InputDisabled, InputArea, IconoValidacionhora, Label, Parrafos, ContenedorCheckSimple, Labelinicio, LabelModal
+    RegistraResultados, InputDisabled, InputArea, IconoValidacionhora, Label, Parrafos, ContenedorCheckSimple, Labelinicio, LabelModal,
 }

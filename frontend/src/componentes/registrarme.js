@@ -5,6 +5,7 @@ import { useState } from "react";
 import { URL, INPUT } from '../Auth/config';
 import axios from 'axios';
 import { Button, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
+import md5 from 'md5'
 
 
 
@@ -28,10 +29,11 @@ function Registrame() {
             nombre.valido === 'true' && apellidoPat.valido === 'true' && apellidoMat.valido === 'true' && direccion.valido === 'true') {
             let today = new Date()
             let fecha = today.toISOString().split('T')[0]
+            const pas = md5(password.campo)
             axios.get(URL + '/public/registrarme', {params:{
 
                 username: username.campo,
-                pass: password.campo,
+                pass: pas,
                 ci: ci.campo,
                 nombre: nombre.campo,
                 apellidoPaterno: apellidoPat.campo,

@@ -39,14 +39,14 @@ function ItemServicio() {
     const [metodologia, setMetodologia] = useState({ campo: null, valido: null })
     const [intervalo, setIntervalo] = useState({ campo: null, valido: null })
     const [unidad, setUnidad] = useState({ campo: null, valido: null })
-    const [inferior, setInferior] = useState({ campo: null, valido: null })
-    const [superior, setSuperior] = useState({ campo: null, valido: null })
+    const [inferior, setInferior] = useState({ campo: 0, valido: 'true' })
+    const [superior, setSuperior] = useState({ campo: 0, valido: 'true' })
     const [edad1, setEdad1] = useState({ campo: null, valido: null })
     const [edad2, setEdad2] = useState({ campo: null, valido: null })
     const [sexo, setSexo] = useState({ campo: null, valido: null })
     const [muestras, setMuestras] = useState({ campo: null, valido: null })
     const [idItemServicio, setIdItemServicio] = useState({ campo: null, valido: null })
-    const [sexos] = useState([{ id: "M", nombre: "Masculino" }, { id: "F", nombre: "Femenino" }]);
+    const [sexos] = useState([ {id: "T", nombre: "todos" }, { id: "M", nombre: "Masculino" }, { id: "F", nombre: "Femenino" }]);
     const [listIntervalo, setListIntervalo] = useState([])
 
 
@@ -59,11 +59,10 @@ function ItemServicio() {
     }, [])
 
     useEffect(() => {
-        const inter = setInterval(() => {
+        setTimeout(() => {
             setMensaje(null)
         }, 10000);
-        return inter;
-    }, [])
+    }, [mensaje])
 
 
     const token = localStorage.getItem("token")
@@ -79,7 +78,7 @@ function ItemServicio() {
     )
 
     const listaItemServicio = async () => {
-  
+
         axios.post(URL + '/itemservicio/all').then(json => {
             setItemServicio(json.data)
         })
@@ -93,7 +92,6 @@ function ItemServicio() {
     }
 
     const abrirModalInsetar = () => {
-
         setModalInsertarItem(true);
         setMensaje(null)
 
@@ -250,7 +248,7 @@ function ItemServicio() {
     }
 
 
-    const listaIntervalos = async (intervalo) => {
+    const listaIntervalosPrin = async (intervalo) => {
 
         setNombre({ campo: intervalo.item, valido: 'true' })
         setIdItemServicio({ campo: intervalo.id, valido: 'true' })
@@ -267,7 +265,25 @@ function ItemServicio() {
         }
     }
 
-    const vaciarIntervalos = () => {
+    const listaIntervalos = async (intervalo) => {
+
+        setNombre({ campo: intervalo.y, valido: 'true' })
+        setIdItemServicio({ campo: intervalo.id, valido: 'true' })
+        setDatos([])
+        if (intervalo.id != null) {
+
+            axios.post(URL + '/intervalo/all', { id: intervalo.id }).then(json => {
+                setDatos(json.data)
+                setModalVerIntervalo(false)
+            })
+        }
+        else {
+            alert('falta infp')
+        }
+    }
+
+
+    const cancelarInsertarIntervalo = () => {
         setIdItemServicio({ campo: null, valido: null })
         setDescripcion({ campo: null, valido: null })
         setMetodologia({ campo: null, valido: null })
@@ -282,10 +298,10 @@ function ItemServicio() {
         setIdIntervalo({ campo: null, valido: null })
         setNombreDependiente({ campo: null, valido: null })
         setModalInsertatIntervalo(false)
-        setVerIntervalo(false)
-        setModalVerIntervalo(true)
-        // setListIntervalo([])
+        setVerIntervalo(true)
     }
+
+
     const rellenarIntervalo = () => {
         setIdIntervalo({ campo: listIntervalo[0].id, valido: 'true' })
         setIdItemServicio({ campo: listIntervalo[0].idItemServicio, valido: 'true' })
@@ -304,6 +320,7 @@ function ItemServicio() {
     }
 
     const mostrarIntervalo = async (intervalo) => {
+
         if (intervalo != null) {
 
             axios.post(URL + '/intervalo/ver', { id: intervalo }).then(json => {
@@ -348,7 +365,7 @@ function ItemServicio() {
                                 setMensaje(json.data.msg)
                             } else {
                                 setDatos(json.data)
-                                setIdItemServicio({ campo: null, valido: null })
+                                // setIdItemServicio({ campo: null, valido: null })
                                 setDescripcion({ campo: null, valido: null })
                                 setMetodologia({ campo: null, valido: null })
                                 setIntervalo({ campo: null, valido: null })
@@ -371,7 +388,7 @@ function ItemServicio() {
                 setMensaje('limite superior deberia ser mayo a inferior')
             }
         } else {
-            setMensaje('complnte todos los campos')
+            setMensaje('complete todos los campos')
         }
     }
 
@@ -384,7 +401,7 @@ function ItemServicio() {
             superior.valido === 'true' && edad1.valido === 'true' && edad2.valido === 'true' &&
             sexo.valido === 'true' && muestras.valido === 'true' && idIntervalo.valido === 'true') {
 
-            if (inferior.campo <= superior.campo) {
+            // if (inferior.campo <= superior.campo) {
 
                 if (edad2.campo >= edad1.campo) {
                     axios.post(URL + '/intervalo/actualizar',
@@ -407,13 +424,13 @@ function ItemServicio() {
                                 setMensaje(json.data.msg)
                             } else {
                                 setListIntervalo(json.data)
-                                setIdItemServicio({ campo: null, valido: null })
+                                // setIdItemServicio({ campo: null, valido: null })
                                 setDescripcion({ campo: null, valido: null })
                                 setMetodologia({ campo: null, valido: null })
                                 setIntervalo({ campo: null, valido: null })
                                 setUnidad({ campo: null, valido: null })
-                                setInferior({ campo: null, valido: null })
-                                setSuperior({ campo: null, valido: null })
+                                setInferior({ campo: 0, valido: 'true' })
+                                setSuperior({ campo: 0, valido: 'true' })
                                 setEdad1({ campo: null, valido: null })
                                 setEdad2({ campo: null, valido: null })
                                 setSexo({ campo: null, valido: null })
@@ -425,9 +442,9 @@ function ItemServicio() {
                         })
                 }
                 else { setMensaje('Edad minima deberia ser mayor a la edad máxima') }
-            } else {
-                setMensaje('limite superior deberia ser mayo a inferior')
-            }
+            // } else {
+            // //     setMensaje('limite superior deberia ser mayo a inferior')
+            // // }
         } else {
             setMensaje('complnte todos los campos')
         }
@@ -496,7 +513,7 @@ function ItemServicio() {
                                                     <tr key={i.item}>
                                                         <td className="col-4">{i.servicio}</td>
                                                         <td className="col-4 ">{i.item}</td>
-                                                        <td className="col-1 " ><p className='btnverSolicitud text-center' onClick={() => { listaIntervalos(i); setVerIntervalo(true); setVerDependientes(false) }}><FontAwesomeIcon icon={faInfo} /></p></td>
+                                                        <td className="col-1 " ><p className='btnverSolicitud text-center' onClick={() => { listaIntervalosPrin(i); setVerIntervalo(true); setVerDependientes(false) }}><FontAwesomeIcon icon={faInfo} /></p></td>
                                                         <td className="col-1 "><p className='btnverSolicitud text-center' onClick={() => eliminar(i.codigo)}><FontAwesomeIcon icon={faTrashAlt} /></p></td>
                                                         <td className="col-1 "><p className='btnverSolicitud text-center' onClick={() => abrirModalEditar(i)}><FontAwesomeIcon icon={faEdit} /></p></td>
                                                         <td className="col-1 "><p className='btnverSolicitud text-center' onClick={() => { listarDependientes(i); setVerDependientes(true); setVerIntervalo(false) }}><FontAwesomeIcon icon={faAngleRight} /></p></td>
@@ -510,7 +527,7 @@ function ItemServicio() {
                                     </div>
                                     <div className="card-footer clearfix">
                                         <ul className="pagination pagination-sm m-0 float-right">
-                                            <li className="page-item"><Link className="page-link" to="#" onClick={() => listaItemServicio()}>Reinicar</Link></li>
+                                            {/* <li className="page-item"><Link className="page-link" to="#" onClick={() => listaItemServicio()}>Reinicar</Link></li> */}
 
                                         </ul>
                                     </div>
@@ -528,6 +545,8 @@ function ItemServicio() {
                                                         <tr >
                                                             {/* <th className="col-1 col-sm-1 col-md-1-col-lg-1  pl-4 pl-lg-4 pl-md-4 pl-sm-4">Nº</th> */}
                                                             <th className="col-5 ">COMPLEMENTOS</th>
+                                                            <th className="col-1 text-center">REF</th>
+
                                                             <th className="col-1 text-center">DEL</th>
                                                             <th className="col-1 text-center">UPD</th>
                                                         </tr>
@@ -537,7 +556,7 @@ function ItemServicio() {
                                                             <tr key={d.id}>
 
                                                                 <td className="col-5 ">{d.y}</td>
-
+                                                                <td className="col-1 " ><p className='btnverSolicitud text-center' onClick={() => { listaIntervalos(d); setVerIntervalo(true); setVerDependientes(false) }}><FontAwesomeIcon icon={faInfo} /></p></td>
                                                                 <td className=" col-1 ">
                                                                     <p onClick={() => eliminarDependiente(d)} className='btnverSolicitud text-center' ><FontAwesomeIcon icon={faTrashAlt} /></p>
                                                                 </td>
@@ -546,7 +565,7 @@ function ItemServicio() {
                                                                     <p onClick={() => {
                                                                         setModalEditarDependientes(true); setId({ campo: d.id, valido: 'true' });
                                                                         setNombreDependiente({ campo: d.y, valido: 'true' }); setCodigo(d.codigo)
-                                                                    }}  className='btnverSolicitud text-center'><FontAwesomeIcon icon={faEdit} />
+                                                                    }} className='btnverSolicitud text-center'><FontAwesomeIcon icon={faEdit} />
                                                                     </p></td>
                                                             </tr>
                                                         ))}
@@ -645,7 +664,7 @@ function ItemServicio() {
                                                         <label>  {listIntervalo[0].unidad}</label>
                                                     </div>
                                                 </div>
-                                                <div className='row verSolicitud'>
+                                                {/* <div className='row verSolicitud'>
                                                     <div className='col-5 fontTitulo'>
                                                         <label>Limite inferior: </label>
                                                     </div>
@@ -660,7 +679,7 @@ function ItemServicio() {
                                                     <div className='col-7 fontContenido'>
                                                         <label>  {listIntervalo[0].superior}</label>
                                                     </div>
-                                                </div>
+                                                </div> */}
                                                 <div className='row verSolicitud'>
                                                     <div className='col-5 fontTitulo'>
                                                         <label>intervalo de edad: </label>
@@ -893,7 +912,7 @@ function ItemServicio() {
                                                         etiqueta='Unidad '
                                                     />
                                                 </div>
-                                                <div className="col-6">
+                                                {/* <div className="col-6">
                                                     <ComponenteInputUser
                                                         estado={inferior}
                                                         cambiarEstado={setInferior}
@@ -912,7 +931,7 @@ function ItemServicio() {
                                                         ExpresionRegular={INPUT.NUMEROS}  //expresion regular
                                                         etiqueta='Limite Sup.'
                                                     />
-                                                </div>
+                                                </div> */}
                                                 <div className="col-6">
                                                     <ComponenteInputUser
                                                         estado={edad1}
@@ -940,7 +959,7 @@ function ItemServicio() {
                                                         estado={sexo}
                                                         cambiarEstado={setSexo}
                                                         name="nombre"
-                                                        ExpresionRegular={INPUT.SEXO}  //expresion regular
+                                                        ExpresionRegular={INPUT.SEXO3}  //expresion regular
                                                         lista={sexos}
                                                         etiqueta='Sexo'
                                                     />
@@ -963,7 +982,7 @@ function ItemServicio() {
 
                                                 {idIntervalo.valido === 'true' ? <button className='info' onClick={() => actualizarIntervalo()} style={{ marginRight: '5px' }}>Actualizar</button> :
                                                     <button className='info' onClick={() => añadirIntervalo()} style={{ marginRight: '5px' }}>Registrar</button>}
-                                                <button className='danger' onClick={() => vaciarIntervalos()} >Cancelar</button>
+                                                <button className='danger' onClick={() => {cancelarInsertarIntervalo(); setVerIntervalo(false) }} >Cancelar</button>
                                             </ul>
                                         </div>
                                     </ModalBody>

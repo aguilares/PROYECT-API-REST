@@ -6,13 +6,14 @@ const INPUT = {
     PASSWORD: /^.{4,12}$/, // 4 a 12 digitos.
     NOMBRE_PERSONA: /^[a-zA-ZÑñ ]{2,30}$/, 
     CI: /^\d{7,10}$/,
-    DIRECCION : /^.{8,50}$/,
+    DIRECCION : /^.{4,100}$/,
     SEGURO:/^.{3,50}$/,
     TELEFONO: /^\d{5,10}$/, // 7 a 10 numeros.
     ID :/^\d{1,10}$/, // id de redes, 1 a 4 digitos
     FECHA: /\d{4}[-]\d{2}[-]\d{2}/,
     HORA : /\d{2}[:]\d{2}[:]\d{2}/,
     SEXO:/^[FMfm]{1}$/,
+    SEXO3:/^[FMfmTt]{1}$/,
     NHC : /^\d{1,10}$/,
     EDAD :/^\d{1,3}$/, // id de redes, 1 a 4 digitos
     DIAGNOSTICO :/^.{8,200}$/,

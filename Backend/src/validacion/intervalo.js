@@ -40,7 +40,7 @@ export const insertar = [
     check('sexo')
         .exists()
         .isLength({ min: 1, max: 1 })
-        .matches(/[fmFM]/),
+        .matches(/[fmFMTt]/),
 
     check('muestras')
         .exists()
@@ -97,7 +97,7 @@ export const editar = [
     check('sexo')
         .exists()
         .isLength({ min: 1, max: 1 })
-        .matches(/[fmFM]/),
+        .matches(/[fmFMTt]/),
 
     check('muestras')
         .exists()
@@ -127,6 +127,13 @@ export const eliminar = [
 
 export const listar = [
     check('id').isLength({ min: 1 }).exists().isNumeric(),
+
+    (req, res, next) => {
+        validaciones(req, res, next)
+    }
+]
+export const listCodigo = [
+    check('codigo').isLength({ min: 1 }).exists(),
 
     (req, res, next) => {
         validaciones(req, res, next)

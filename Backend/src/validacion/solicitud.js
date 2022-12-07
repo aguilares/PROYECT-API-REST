@@ -112,6 +112,9 @@ export const autorizar = [
         .isLength({ min: 1 })
         .exists()
         .isNumeric(),
+    check('sello')
+        .isLength({ min: 1 })
+        .exists(),
     check('fecha')
         .exists()
         .matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
@@ -145,7 +148,7 @@ export const listarServicios = [
 export const eliminarAdmin = [
     check('codigoSol')
         .exists()
-        .isLength({min: 1}),
+        .isLength({ min: 1 }),
 
     check('texto')
         .isLength({ min: 10 })
@@ -214,6 +217,15 @@ export const editarLab = [
 
 export const buscarLab = [
     check('dato').isLength({ min: 1 }).exists(),
+    (req, res, next) => {
+        validaciones(req, res, next)
+    }
+]
+
+export const registrarRes = [
+    check('fechaHoraPublicacionRes')
+        .exists()
+        .matches(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
     (req, res, next) => {
         validaciones(req, res, next)
     }

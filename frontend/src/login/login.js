@@ -1,6 +1,6 @@
 import {  useState } from "react";
 import useAuth from "../Auth/useAuth";
-// import md5 from 'md5'
+import md5 from 'md5'
 import { Link } from "react-router-dom";
 import React from 'react';
 
@@ -29,10 +29,8 @@ const Formulario = () => {
 
 
     if ((usuario.valido === 'true' && password.valido === 'true')) {
-      // const md5s = md5()
+      const pass = md5(password.campo)
       const user = usuario.campo;
-      // const pass = md5(password.campo);
-      const pass = password.campo;
 
 
       e.preventDefault()  //para que la pagina no se recargue
@@ -47,8 +45,9 @@ const Formulario = () => {
             localStorage.setItem('username', json.data.username)
             localStorage.setItem('nombre', json.data.nombre)
             localStorage.setItem('apellido', json.data.apellido)
-            localStorage.setItem('area', json.data.area)
+            localStorage.setItem('servicio', json.data.servicio)
             localStorage.setItem('rol', json.data.rol)
+            localStorage.setItem('numRol', json.data.numRol)
             auth.login('ok')
 
           } else {

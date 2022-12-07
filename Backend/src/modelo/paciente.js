@@ -127,7 +127,7 @@ export class Paciente {
         const sql =
             `SELECT id,nombre, apellidoPaterno, apellidoMaterno, nhc, ci, DATE_FORMAT(fechaNac, "%Y-%m-%d") as fechaNac, sexo, telefono, direccion FROM paciente
             WHERE ci = ${pool.escape(dato)} or nombre = ${pool.escape(dato)} or apellidoPaterno = ${pool.escape(dato)}
-            or apellidoMaterno = ${pool.escape(dato)}`;
+            or apellidoMaterno = ${pool.escape(dato)} or nhc= ${pool.escape(dato)}`;
         const [rows] = await pool.query(sql)
         return rows
     }

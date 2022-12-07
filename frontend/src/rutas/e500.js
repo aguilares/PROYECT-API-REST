@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import React from 'react';
 
 function E500() {
+    // console.log(parseInt(localStorage.getItem('numRol')), 'numero de rol')
 
     return (
         <>

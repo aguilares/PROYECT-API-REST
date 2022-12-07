@@ -1,17 +1,85 @@
 
 // import { Link } from 'react-router-dom'
 
+import React from 'react';
+// import ReactExport from "react-export-excel"
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight, faRecycle, faSave } from '@fortawesome/free-solid-svg-icons';
 
-import React from 'react';
 
 import useAuth from "../Auth/useAuth"
-import {  ComponenteInputFile } from './elementos/input';  // componente input que incluye algunas de las funcionalidades como, setInput, validaciones cambio de estados
+import { ComponenteInputFile } from './elementos/input';  // componente input que incluye algunas de las funcionalidades como, setInput, validaciones cambio de estados
 import Home from './elementos/home'
 import { useState, useEffect } from "react";
 import { URL } from '../Auth/config';
 import axios from 'axios';
+
+
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const dataSet1 = [
+    {
+        name: "Johson",
+        amount: 30000,
+        sex: 'M',
+        is_married: true
+    },
+    {
+        name: "Monika",
+        amount: 355000,
+        sex: 'F',
+        is_married: false
+    },
+    {
+        name: "John",
+        amount: 250000,
+        sex: 'M',
+        is_married: false
+    },
+    {
+        name: "Josef",
+        amount: 450500,
+        sex: 'M',
+        is_married: true
+    }
+];
+
+const dataSet2 = [
+    {
+        name: "Johnson",
+        total: 25,
+        remainig: 16
+    },
+    {
+        name: "Josef",
+        total: 25,
+        remainig: 7
+    }
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function Laboratorio() {
@@ -20,7 +88,6 @@ function Laboratorio() {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState([]);
     const [imagenActual, setImagenActual] = useState(null)
-
     const [verImagen, setModalImagen] = useState(false);
     const auth = useAuth()
     useEffect(() => {
@@ -45,11 +112,11 @@ function Laboratorio() {
 
         axios.post(URL + '/laboratorio/all').then(json => {
             if (json.data.resultado.length > 0) {
+                console.log(json.data.image)
                 setFileName(json.data.image)
             }
 
         })
-
     }
 
 
@@ -154,6 +221,21 @@ function Laboratorio() {
                                             }
                                         </div>
                                     </div>
+
+                                    {/* <ExcelFile element={<button>Download Data</button>}>
+                                        <ExcelSheet data={dataSet1} name="Employees">
+                                            <ExcelColumn label="Name" value="name" />
+                                            <ExcelColumn label="Wallet Money" value="amount" />
+                                            <ExcelColumn label="Gender" value="sex" />
+                                            <ExcelColumn label="Marital Status"
+                                                value={(col) => col.is_married ? "Married" : "Single"} />
+                                        </ExcelSheet>
+                                        <ExcelSheet data={dataSet2} name="Leaves">
+                                            <ExcelColumn label="Name" value="name" />
+                                            <ExcelColumn label="Total Leaves" value="total" />
+                                            <ExcelColumn label="Remaining Leaves" value="remaining" />
+                                        </ExcelSheet>
+                                    </ExcelFile> */}
                                 </div>
                             </div>
                         </div>

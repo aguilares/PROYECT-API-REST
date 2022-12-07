@@ -34,7 +34,7 @@ rutas.get('/', async (req, res) => {
 
         const [result] = await pool.query(sql)
 
-        // console.log("datos de la consulta: ", result.length===1)
+        console.log("datos de la consulta: ", result)
 
         if (result.length === 1) {
             var d = new Date();
@@ -64,13 +64,12 @@ rutas.get('/', async (req, res) => {
             if (sesion.insertId > 0) {
                 // console.log('dentro del bloquesss', sesion)
 
-                const sqlInfo = `SELECT UPPER(r.nombre) as rol,
+                const sqlInfo = `SELECT UPPER(r.nombre) as rol, r.numero as numRol,
                     u.username, concat(UPPER(left(u.nombre,1)),LOWER(SUBSTRING(u.nombre,2))) as nombre, 
                     concat(UPPER(left(u.apellidoPaterno,1)),LOWER(SUBSTRING(u.apellidoMaterno,2))) as apellido, 
-                    UPPER(a.nombre) AS area
+                    UPPER(s.nombre) AS servicio
                     from usuario u
                     inner join servicio s on u.idServicio = s.id
-                    inner join area a on s.idArea = a.id 
                     inner join rol r on u.idRol = r.id
                     where u.username = ${pool.escape(req.query.user)} and u.pass = ${pool.escape(req.query.pass)}`;
                 const [info] = await pool.query(sqlInfo)
@@ -81,8 +80,9 @@ rutas.get('/', async (req, res) => {
                     'username': info[0].username,
                     'nombre': info[0].nombre,
                     'apellido': info[0].apellido,
-                    'area': info[0].area,
-                    'rol': info[0].rol
+                    'servicio': info[0].servicio,
+                    'rol': info[0].rol,
+                    'numRol': info[0].numRol
                 })
             }
             else {

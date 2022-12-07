@@ -13,28 +13,13 @@ import React from 'react';
 
 export default function Check({ component: Component, ...rest }) {
     const auth = useAuth();
-    // const token = localStorage.getItem("token")
-    // axios.interceptors.request.use(
-    //     config => {
-    //         config.headers.authorization = `Bearer ${token}`
-    //         return config
-    //     },
-    //     error => {
-    //         auth.logout()
-    //         return Promise.reject(error)
-    //     }
-    // )
-    // axios.post(URL + '/verificar').then(json => {
-    //     console.log('avio del servidor: ', json.data)
-    //     if(json.data.ok === false){
-    //         auth.logout()
-    //     }
-    // })
+
 
     return (
 
         <Route {...rest}>
-            {auth.isLogged() ? <Component /> : window.location.href = "/"
+            {
+                auth.isLogged() ? <Component /> : window.location.href = "/"
             }
 
         </Route>

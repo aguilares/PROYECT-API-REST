@@ -368,7 +368,7 @@
     color: #006572;
     height: 27px;
     width: 28px;
-    margin: 0 auto; 
+    margin: 0 auto;
     border-radius: 2px;
 }
 
@@ -376,11 +376,6 @@
     background-color: #17a2b8;
     color: white !important;
 }
-
-
-
-
-
 
 
 
@@ -439,6 +434,7 @@ tr {
     height: 25px;
     width: 28px;
 }
+
 .btnIcono:hover {
     background-color: #17a2b8;
     color: white !important;
@@ -448,7 +444,7 @@ tr {
     margin-top: 0px;
     font-family: 'Montserrat', sans-serif;
     color: black;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .fontTitulo {
@@ -457,17 +453,68 @@ tr {
 
 
 .paginaversolicitud {
+    background-color: white;
     margin-top: 10px;
-    padding: 5px;
-    margin-left: 0px;
-    margin-right: 0px;
+    padding: 15px;
+    margin: auto;
+    border: 3px solid #c5d1d3;
+}
 
-    /* background-color: #DDDADA; */
-    /* border: 2px solid #198754; */
+.title {
+    font-size: 20px;
+    border: 3px solid #006572;
+    /* font-family: 'Times New Roman', Times, serif; */
+    font-family: monospace;
+
+    text-align: center;
+}
+
+.page {
+    margin: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+    /* border: 2px solid #006572; */
+}
+
+.subtitulo {
+    font-size: 12px;
+    font-weight: lighter; 
 }
 
 
+/* CONTENEDOR DE IMAGEN */
 
+
+.sliderimg{
+    max-height: 150px;
+    border-radius: 5px;
+    border: 1px solid #add;
+    display: flex;
+    overflow-x: auto;
+}
+
+.sliderimg::-webkit-scrollbar{
+    height:  5px;
+}
+.sliderimg::-webkit-scrollbar-thumb{
+
+    background: #bdbdbd;
+    border-radius: 50px;
+}
+
+
+ .itemImg {
+    min-width: 50px;
+    height: 110px;
+    line-height: 110px;
+    text-align: center;
+}
+
+.tamimg{
+    width: 200px;
+    height: 90px;
+    margin: 0px;
+    padding: 0px;
+}
 /* solo dispositivos moviles */
 
 @media only screen and (max-width:959px) {

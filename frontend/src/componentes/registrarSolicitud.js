@@ -1,6 +1,6 @@
 import { Table, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faAngleRight, faCheck, faDownload, faEdit, faNotesMedical, faRecycle, faSave, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faAngleRight, faCheck, faEdit, faNotesMedical, faRecycle, faSave, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { Link } from 'react-router-dom'
 
@@ -13,7 +13,7 @@ import {
 
 } from './elementos/input';  // componente input que incluye algunas de las
 
-import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+// import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 
 import { Label } from './elementos/estilos';
 import Home from './elementos/home';
@@ -25,59 +25,61 @@ import { Line } from './elementos/estilos';  // componente input que incluye alg
 
 function RegistrarSolicitud() {
     const auth = useAuth()
+    const [ciBuscar, setCiBuscar] = useState({ campo: null, valido: null })
+    const [all, setall] = useState(0)
+    const [acept, setAcept] = useState(0)
+    const [pendding, setPendding] = useState(0)
+    const [cantidad, setCantidad] = useState([]) // cantidad de solicitudes en inicio y registros
+    const [solicitud, setSolicitud] = useState([])
+    const [informe, setInforme] = useState([])
+    const [laboratorio, setLaboratorio] = useState([])
+
+    const [seguros, setSeguros] = useState([])
+    const [servicio, setServicio] = useState([])
+    const [ver, setVer] = useState(false)
+    const [pdf, setPdf] = useState(false)
+    const [lista, setLista] = useState(true)
+    const [verListaExamen, setVerListarExamen] = useState(false)
+    const [formulario, setFormulario] = useState(false)   // salas que estan disponibles en el servicio
+    const [idServicio, setIdServicio] = useState({ campo: null, valido: null })
+    const [examenesSeleccionados, setExamenesSeleccionados] = useState([])
+    const [examenesSeleccionadosMostrar, setExamenesSeleccionadosMostrar] = useState([])
+    // const [mensaje, setMensaje] = useState(null)
+
+
+
+
+    const [examen, setExamen] = useState([])
+
+    let fecha = new Date().toLocaleDateString()
+    // console.log('fecha de loggg : ', fecha.toLocaleString())
+    let año = fecha.split('/')[2]
+    let mes = fecha.split('/')[1]
+    let dia = fecha.split('/')[0]
+    if (mes < 10) {
+        mes = 0 + '' + mes
+    }
+    if (dia < 10) {
+        dia = 0 + '' + dia
+
+    }
+    const [fechaHoy, setFechaHoy] = useState({ campo: año + '-' + mes + '-' + dia, valido: 'true' })
+
+    const [fechaSolicitud, setFechaSolicitud] = useState({ campo: año + '-' + mes + '-' + dia, valido: 'true' })
+    const [codigoSol, setCodigoSol] = useState(null)
+    const [idPaciente, setIdPaciente] = useState(null)
+    const [ci, setCi] = useState({ campo: null, valido: null })
+    const [edad, setEdad] = useState({ campo: null, valido: null })
+    const [sexo, setSexo] = useState({ campo: null, valido: null })
+    const [nhc, setNhc] = useState({ campo: null, valido: null })
+    const [fechaNac, setFechaNac] = useState({ campo: null, valido: null })
+    const [nombrePaciente, setNombrePaciente] = useState({ campo: null, valido: null })
+    const [diagnostico, setDiagnostico] = useState({ campo: null, valido: null })
+    const [HoraSolicitud, setHoraSolicitud] = useState({ campo: new Date().toLocaleTimeString(), valido: 'true' })
+    const [idSeguro, setIdseguro] = useState({ campo: null, valido: null })
     try {
 
-        const [ciBuscar, setCiBuscar] = useState({ campo: null, valido: null })
-        const [all, setall] = useState(0)
-        const [acept, setAcept] = useState(0)
-        const [pendding, setPendding] = useState(0)
-        const [cantidad, setCantidad] = useState([]) // cantidad de solicitudes en inicio y registros
-        const [solicitud, setSolicitud] = useState([])
-        const [informe, setInforme] = useState([])
 
-        const [seguros, setSeguros] = useState([])
-        const [servicio, setServicio] = useState([])
-        const [ver, setVer] = useState(false)
-        const [pdf, setPdf] = useState(false)
-        const [lista, setLista] = useState(true)
-        const [verListaExamen, setVerListarExamen] = useState(false)
-        const [formulario, setFormulario] = useState(false)   // salas que estan disponibles en el servicio
-        const [idServicio, setIdServicio] = useState({ campo: null, valido: null })
-        const [examenesSeleccionados, setExamenesSeleccionados] = useState([])
-        const [examenesSeleccionadosMostrar, setExamenesSeleccionadosMostrar] = useState([])
-        // const [mensaje, setMensaje] = useState(null)
-
-
-
-
-        const [examen, setExamen] = useState([])
-        let fecha = new Date().toLocaleDateString()
-        // console.log('fecha de loggg : ', fecha.toLocaleString())
-        let año = fecha.split('/')[2]
-        let mes = fecha.split('/')[1]
-        let dia = fecha.split('/')[0]
-        if (mes < 10) {
-            mes = 0 + '' + mes
-        }
-        if (dia < 10) {
-            dia = 0 + '' + dia
-
-        }
-        const [fechaHoy, setFechaHoy] = useState({ campo: año + '-' + mes + '-' + dia, valido: 'true' })
-
-        const [fechaSolicitud, setFechaSolicitud] = useState({ campo: año + '-' + mes + '-' + dia, valido: 'true' })
-        const [codigoSol, setCodigoSol] = useState(null)
-        const [idPaciente, setIdPaciente] = useState(null)
-        const [ci, setCi] = useState({ campo: null, valido: null })
-        const [edad, setEdad] = useState({ campo: null, valido: null })
-        const [sexo, setSexo] = useState({ campo: null, valido: null })
-        const [nhc, setNhc] = useState({ campo: null, valido: null })
-        const [fechaNac, setFechaNac] = useState({ campo: null, valido: null })
-        const [nombrePaciente, setNombrePaciente] = useState({ campo: null, valido: null })
-        const [diagnostico, setDiagnostico] = useState({ campo: null, valido: null })
-        const [HoraSolicitud, setHoraSolicitud] = useState({ campo: new Date().toLocaleTimeString(), valido: 'true' })
-        const [idSeguro, setIdseguro] = useState({ campo: null, valido: null })
-        // const [inputChecked, setInputChecked] = useState([])
 
         const count = async () => {
 
@@ -104,7 +106,6 @@ function RegistrarSolicitud() {
         const listaSeguro = async () => {
 
             axios.post(URL + '/seguro/all').then(json => {
-                console.log('datos de los seguros: ', json.data)
                 setSeguros(json.data)
             })
         }
@@ -266,7 +267,7 @@ function RegistrarSolicitud() {
         }
 
         const actualizarSolicitud = () => {
-            console.log(solicitud)
+            // console.log(solicitud)
             setCodigoSol(solicitud[0].codigoSol)
             setCi({ campo: solicitud[0].ci, valido: 'true' })
             setIdPaciente(solicitud[0].idPaciente)
@@ -339,8 +340,8 @@ function RegistrarSolicitud() {
                 // console.log(fechaSolicitud, HoraSolicitud, idSeguro, diagnostico, idPaciente, seleccionExamen)
 
                 if (seleccionExamen.length > 0) {
-                    await axios.post(URL+'/solicitud/listarexamen', {examen:seleccionExamen}).then(
-                        json=>{
+                    await axios.post(URL + '/solicitud/listarexamen', { examen: seleccionExamen }).then(
+                        json => {
                             // console.log('data final',json.data)
                             axios.post(URL + '/solicitud/registrarS', {
                                 fecha: fechaSolicitud.campo,
@@ -409,19 +410,22 @@ function RegistrarSolicitud() {
                     }
                 });
                 if (seleccionExamen.length > 0) {
-                    await axios.post(URL + '/solicitud/actualizarS', {
-                        codigoSol: codigoSol,
-                        fecha: fechaSolicitud.campo,
-                        hora: HoraSolicitud.campo,
-                        diagnostico: diagnostico.campo,
-                        seguro: idSeguro.campo,
-                        paciente: idPaciente,
-                        examen: seleccionExamen
-                    }).then(json => {
-                        setSolicitud(json.data)
-                        abandonarFormularioEditar()
-                        // setVerListarExamen(false)
-                    })
+                    await axios.post(URL + '/solicitud/listarexamen', { examen: seleccionExamen }).then(
+                        json => {
+                            axios.post(URL + '/solicitud/actualizarS', {
+                                codigoSol: codigoSol,
+                                fecha: fechaSolicitud.campo,
+                                hora: HoraSolicitud.campo,
+                                diagnostico: diagnostico.campo,
+                                seguro: idSeguro.campo,
+                                paciente: idPaciente,
+                                examen: json.data
+                            }).then(json => {
+                                setSolicitud(json.data)
+                                abandonarFormularioEditar()
+                                // setVerListarExamen(false)
+                            })
+                        })
                 }
                 else {
                     alert("POR FAVOR SELECCIONE AL MENOS UN EXAMEN DE LOS DISPONIBLES")
@@ -455,8 +459,9 @@ function RegistrarSolicitud() {
                 }).then(json => {
 
                     if (json.data.length > 0) {
-                        // console.log(json.data)
-                        setInforme(json.data)
+                        console.log(json.data,'infrome')
+                        setInforme(json.data[0])
+                        setLaboratorio(json.data[1])
 
                         if (movil === true) {
                             // setInforme(json.data)
@@ -474,18 +479,6 @@ function RegistrarSolicitud() {
                 })
             }
         }
-
-        // const siguiente = async () => {
-        //     if (solicitud.length > 0) {
-        //         let tam = solicitud.length - 1
-        //         let id = solicitud[tam].id
-        //         axios.post(URL + '/paciente/siguiente', { id: id }).then(json => {
-        //             if (json.data.stop !== true)
-        //                 setSolicitud(json.data)
-        //         })
-        //     }
-        // }
-
 
         return (
             <>
@@ -635,9 +628,9 @@ function RegistrarSolicitud() {
                                                         </div>
                                                         {
                                                             examenesSeleccionadosMostrar.length > 0 &&
-                                                            <div className='showExamen'>
+                                                            <div className='showExamen' >
                                                                 {examenesSeleccionadosMostrar.map((x) => (
-                                                                    <small key={x.nombre}>{'-' + x.nombre + '-'}</small>
+                                                                    <small key={x.nombre}>{x.nombre + ', '}</small>
                                                                 ))
                                                                 }
                                                             </div>
@@ -660,21 +653,25 @@ function RegistrarSolicitud() {
                                                                     />
                                                                 </div>
 
+                                                                <div className='row mt-2'>
 
+                                                                    {examen.map((x) => (
 
-                                                                {examen.map((x) => (
-                                                                    <div key={x.servicioSolicitado} className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
-                                                                        {
-                                                                            <ComponenteCheck
-                                                                                id={x.idItemServicio}
-                                                                                item={x.servicioSolicitado}
-                                                                                admitidos={examenesSeleccionados}
-                                                                                funcion={asignarExamenesSeleccionados}
+                                                                        <div key={x.servicioSolicitado} className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                                                                            {
+                                                                                <ComponenteCheck
+                                                                                    id={x.idItemServicio}
+                                                                                    item={x.servicioSolicitado}
+                                                                                    admitidos={examenesSeleccionados}
+                                                                                    funcion={asignarExamenesSeleccionados}
 
-                                                                            />
-                                                                        }
-                                                                    </div>
-                                                                ))}</>
+                                                                                />
+                                                                            }
+                                                                        </div>
+
+                                                                    ))}
+                                                                </div>
+                                                            </>
                                                         }
                                                         {
                                                             formulario === true && solicitud.length > 0 && verListaExamen === true &&
@@ -745,7 +742,7 @@ function RegistrarSolicitud() {
                                             lista === true &&
                                             <div className='row'>
                                                 <div className=' col-10 card '>
-                                                   
+
                                                     <div className="row mt-2 mb-2">
                                                         <div className='col-5 '>
                                                             <Button className=' btnNuevo' onClick={() => nuevaSolicitud()}>Nuevo </Button>
@@ -799,7 +796,7 @@ function RegistrarSolicitud() {
                                                                         {c.recibidoLab === 1 ? <td className="col-1 listEstado  text-center" style={{ color: "#198754" }} ><FontAwesomeIcon icon={faCheck} /> </td> :
                                                                             <td className="col-1 listEstado  text-center"><FontAwesomeIcon icon={faTimes} /> </td>}
 
-                                                                        {c.publisher === 1 ? <td className="col-1 text-center listEstado" style={{ color: "#198754" }}><FontAwesomeIcon icon={faCheck} /> </td> :
+                                                                        {c.resultadoRecibido === 1 ? <td className="col-1 text-center listEstado" style={{ color: "#198754" }}><FontAwesomeIcon icon={faCheck} /> </td> :
                                                                             <td className="col-1 text-center listEstado"><FontAwesomeIcon icon={faTimes} /> </td>}
 
 
@@ -880,12 +877,13 @@ function RegistrarSolicitud() {
                                                                 </div>
                                                             </div>
 
+
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
-                                                                    <label> Seguro:  </label>
+                                                                    <label>Codigo solicitud: </label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label>{solicitud[0].seguro}</label>
+                                                                    <label>  {solicitud[0].codigoSol}</label>
                                                                 </div>
                                                             </div>
 
@@ -923,6 +921,14 @@ function RegistrarSolicitud() {
                                                             </div>
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
+                                                                    <label> Seguro:  </label>
+                                                                </div>
+                                                                <div className='col-7 fontContenido'>
+                                                                    <label>{solicitud[0].seguro}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div className='row verSolicitud'>
+                                                                <div className='col-5 fontTitulo'>
                                                                     <label>Fecha de solicitud: </label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
@@ -934,98 +940,65 @@ function RegistrarSolicitud() {
                                                                     <label>Hora de solicitud: </label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].horaSol}</label>
+                                                                    <label>  {solicitud[0].horaSol.split(':')[0] + ':' + solicitud[0].horaSol.split(':')[1]}</label>
                                                                 </div>
                                                             </div>
 
 
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Codigo solicitud: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].codigoSol}</label>
-                                                                </div>
-                                                            </div>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Resultado recibido: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].resultadoRecibido === 1 ? 'SI' : 'NO'}</label>
-                                                                </div>
-                                                            </div>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Estado: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].estado === 1 ? 'Autorizado' : 'Pendiente'}</label>
-                                                                </div>
-                                                            </div>
+
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
                                                                     <label>Fecha de autorizacion</label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].fechaHoraAutorizacion ? solicitud[0].fechaHoraAutorizacion.split('T')[0] + '  ' + solicitud[0].fechaHoraAutorizacion.split('T')[1].split('.')[0] : '.............'}</label>
+                                                                    <label>  {solicitud[0].fechaHoraAutorizacion ? solicitud[0].fechaHoraAutorizacion.split('T')[0] + '  ' + solicitud[0].fechaHoraAutorizacion.split('T')[1].split('.')[0].split(':')[0] + ':' + solicitud[0].fechaHoraAutorizacion.split('T')[1].split('.')[0].split(':')[1] : '-'}</label>
                                                                 </div>
                                                             </div>
 
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Items: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    {solicitud.map((item) => (
 
-                                                                        <label key={item.servicioSolicitado}>  {item.servicioSolicitado} </label >
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className='col-5'>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Solicitud Recepcionado:</label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].recibidoLab ? 'SI' : 'NO'}</label>
-                                                                </div>
-                                                            </div>
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
                                                                     <label>FECHA Y HORA DE RECEPCION:</label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label >  {solicitud[0].fechaRecLab ? solicitud[0].fechaRecLab + '   ' + solicitud[0].horaRecLab : '..............'} </label >
-                                                                </div>
-                                                            </div>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>hecha y hora Generacion del informe:</label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label >  {solicitud[0].fechaGenInforme ? solicitud[0].fechaGenInforme.split('T')[0] + '  ' + solicitud[0].fechaGenInforme.split('T')[1].split('.')[0] : '.............'} </label >
+                                                                    <label >  {solicitud[0].fechaRecLab ? solicitud[0].fechaRecLab.split('T')[0] + '   ' + solicitud[0].horaRecLab.split(':')[0] + ':' + solicitud[0].horaRecLab.split(':')[1] : '-'} </label >
                                                                 </div>
                                                             </div>
 
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Resultado Disponible: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label >  {solicitud[0].publisher ? 'SI' : 'NO'} </label >
-                                                                </div>
-                                                            </div>
+
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
                                                                     <label>Fecha y hora publicacion resultado:</label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label >  {solicitud[0].fechaHoraPublicacionRes || '.............'} </label >
+                                                                    <label>  {solicitud[0].fechaHoraPublicacionRes ? solicitud[0].fechaHoraPublicacionRes.split('T')[0] + '         ' + solicitud[0].fechaHoraPublicacionRes.split('T')[1].split('.')[0].split(':')[0] + ':' + solicitud[0].fechaHoraPublicacionRes.split('T')[1].split('.')[0].split(':')[1] : '-'}</label>
                                                                 </div>
                                                             </div>
+
+
+                                                            <div className='row verSolicitud'>
+                                                                <div className='col-5 fontTitulo'>
+                                                                    <label>hecha y hora Generacion del informe:</label>
+                                                                </div>
+                                                                <div className='col-7 fontContenido'>
+                                                                    <label >  {solicitud[0].fechaGenInforme ? solicitud[0].fechaGenInforme.split('T')[0] + '  ' + solicitud[0].fechaGenInforme.split('T')[1].split('.')[0].split(':')[0] + ' ' + solicitud[0].fechaGenInforme.split('T')[1].split('.')[0].split(':')[1] : '-'} </label >
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='col-5'>
+
+                                                            <div className='row verSolicitud'>
+                                                                <div className='col-5 fontTitulo'>
+                                                                    <label>SERVICIO SOLICITADOS </label>
+                                                                </div>
+                                                                <div className='col-7 fontContenido'>
+                                                                    {solicitud.map((item) => (
+
+                                                                        item.encabezado === 1 && <label key={item.servicioSolicitado}>  {item.servicioSolicitado} </label >
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1033,7 +1006,7 @@ function RegistrarSolicitud() {
                                                     <div className='row contendorButton'>
                                                         <Button color="danger" className='mt-3 cancelar' onClick={() => abandonarVentanaVer()}><FontAwesomeIcon icon={faAngleLeft} /> </Button>
                                                         {
-                                                            solicitud[0].estado === 0 &&
+                                                            solicitud[0].estado === 0 && solicitud[0].recibidoLab === 0 &&
                                                             <>
                                                                 <Button className='mt-3 actualizar' onClick={() => actualizarSolicitud()}><FontAwesomeIcon icon={faEdit} /> </Button>
                                                                 <Button className='mt-3 eliminar' onClick={() => eliminarSolicitud()}><FontAwesomeIcon icon={faTrashAlt} /> </Button>
@@ -1047,11 +1020,11 @@ function RegistrarSolicitud() {
                                                                     <Button className='mt-3 inf' onClick={() => generarInforme()}><FontAwesomeIcon icon={faNotesMedical} /> </Button>
 
                                                                 </div>
-                                                                <div >
+                                                                {/* <div >
                                                                     <Button className='mt-3 inf ml-0' onClick={() => generarInforme(true)}><FontAwesomeIcon icon={faDownload} /> </Button>
 
                                                                     {
-                                                                        informe.length > 0 &&
+                                                                        informe.length > 0 &&    
                                                                         <PDFDownloadLink
                                                                             document={<GenerarPdf informe={informe} />}
                                                                             fileName={informe[0].paciente + '.pdf'}
@@ -1059,7 +1032,7 @@ function RegistrarSolicitud() {
                                                                             <Button className='mt-3 inf ml-0' id='descargarDocu' style={{ display: 'none' }}><FontAwesomeIcon icon={faDownload} /> </Button>
                                                                         </PDFDownloadLink>
                                                                     }
-                                                                </div>
+                                                                </div> */}
                                                             </>
                                                         }
                                                     </div>
@@ -1069,11 +1042,15 @@ function RegistrarSolicitud() {
                                         }
                                         {
                                             pdf &&
-                                            <PDFViewer style={{ width: '90%', height: '90vh' }}>
+                                            <div>
                                                 <GenerarPdf
                                                     informe={informe}
+                                                    setEstado={setPdf}
+                                                    volver={setVer}
+                                                    lab = {laboratorio}
                                                 />
-                                            </PDFViewer>
+                                                
+                                            </div>
                                         }
 
                                     </div>
@@ -1086,7 +1063,7 @@ function RegistrarSolicitud() {
 
         );
     } catch (error) {
-        // auth.logout()
+        auth.logout()
     }
 }
 export default RegistrarSolicitud;

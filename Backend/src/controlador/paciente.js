@@ -66,7 +66,7 @@ rutas.post("/buscar", buscar, async (req, res) => {
 
 rutas.post("/insertar", insertar, async (req, res) => {
 
-    console.log(req.body)
+    // console.log(req.body)
     const { ci, nombre, apellidoPaterno, apellidoMaterno, nhc, fechaNac, sexo, telefono, direccion, creado, usuario } = req.body
     const datos = {
         ci,

@@ -1,6 +1,9 @@
 import { Router } from "express"
 import { Solicitud } from "../modelo/solicitud.js"
-import { sInsertar, sEditar, sEliminar, sBuscar, ver, autorizar, buscarFecha, informe, eliminarAdmin } from '../validacion/solicitud.js'
+import {
+    sInsertar, sEditar, sEliminar, sBuscar, ver, autorizar, buscarFecha, informe, eliminarAdmin,
+    registrarRes
+} from '../validacion/solicitud.js'
 
 //const modelo from "../modelo/usuario.js"
 // desde esta plantilla se importa las funcionalidades de los controladores de los modulos
@@ -136,7 +139,7 @@ rutas.post("/listarexamen", async (req, res) => {
             req.body.examen.forEach(async id => {
                 const result = await solicitud.listarExamen(id)
 
-                c = c+1
+                c = c + 1
 
                 result.forEach(i => {
                     data.push(i.id)
@@ -145,7 +148,7 @@ rutas.post("/listarexamen", async (req, res) => {
                 if (req.body.examen.length === c) {
                     return res.json(data)
                 }
-                
+
             })
 
         } catch (error) {
@@ -157,9 +160,8 @@ rutas.post("/listarexamen", async (req, res) => {
 
 rutas.post("/registrarS", sInsertar, async (req, res) => {
 
-    // console.log(req.body)
+    console.log(req.body)
     if (req.body.examen?.length > 0) {
-
 
         // console.log(codigoSol)
         const { fecha, hora, diagnostico, seguro, usuario, paciente } = req.body
@@ -204,7 +206,7 @@ rutas.post("/registrarS", sInsertar, async (req, res) => {
 
 rutas.post("/actualizarS", sEditar, async (req, res) => {
 
-    // console.log(req.body)}
+    console.log(req.body)
     if (req.body.examen?.length > 0) {
         // console.log(codigoSol)
         const { codigoSol, fecha, hora, diagnostico, seguro, usuario, paciente } = req.body
@@ -335,12 +337,14 @@ rutas.post("/countA", async (req, res) => {
 })
 
 rutas.post("/autorizar", autorizar, async (req, res) => {
-    // console.log('datos alterados en la verificacion jjjjjj: ', req.body)
-    const { codigoSol, usuario, fecha } = req.body
+    console.log('datos alterados en la verificacion jjjjjj: ', req.body)
+    const { codigoSol, sello, usuario, fecha } = req.body
     let dato = {
         codigoSol,
         usuario,
-        fecha
+        fecha,
+        sello,
+
     }
     // console.log(dato.codigoSol)
     try {
@@ -357,8 +361,9 @@ rutas.post("/autorizar", autorizar, async (req, res) => {
 rutas.post("/eliminarA", eliminarAdmin, async (req, res) => {
     // console.log(req.body)
     try {
-        const { codigoSol, texto } = req.body;
+        const { codigoSol, usuario, texto } = req.body;
         const datos = {
+            usuario,
             codigoSol,
             observacion: texto
         }
@@ -618,10 +623,14 @@ rutas.post("/postanaliticoS", async (req, res) => {
 
 })
 
+
+
 rutas.post("/verL", ver, async (req, res) => {
-    // console.log('datos alterados en la verificacion jjjjjj: ', req.body)
+    console.log('datos alterados en la verificacion jjjjjj: ', req.body)
+    const { usuario, dato, fecha, hora } = req.body
+    const datos = { usuario, codigoSol: dato, fecha, hora }
     try {
-        const resultado = await solicitud.verSolicitudL(req.body.dato)
+        const resultado = await solicitud.verSolicitudUpdate(datos)
         // throw new error()
         // console.log(resultado)
         return res.json(resultado)
@@ -630,4 +639,28 @@ rutas.post("/verL", ver, async (req, res) => {
         return res.json({ msg: 'INTENTE NUEVAMENTE MAS TARDE' })
     }
 })
+
+
+rutas.post("/grabarresultados", registrarRes, async (req, res) => {
+    // console.log(req.body.fechaHoraPublicacionRes)
+    try {
+        let c = 0
+        const usuario = req.body.usuario
+        const fechaHoraPublicacionRes = req.body.fechaHoraPublicacionRes
+        await req.body.solicitud.forEach(e => {
+            solicitud.guardarResutados(e, usuario, fechaHoraPublicacionRes).then(j => {
+                c++
+                if (c === req.body.solicitud.length) {
+                    solicitud.verSolicitudL(e.codigoSol).then(data => {
+                        return res.json(data)
+                    })
+                }
+            })
+        })
+    } catch (error) {
+        console.log(error)
+        return res.json({ msg: 'INTENTE NUEVAMENTE MAS TARDE' })
+    }
+})
+
 export default rutas;

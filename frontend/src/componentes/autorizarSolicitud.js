@@ -1,8 +1,9 @@
-import { Table, Button, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
+import { Table, Button, Modal, ModalBody } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight, faCheck, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom'
 
 import Home from './elementos/home'
 import { URL, INPUT } from '../Auth/config'  // variables globales que estan disponibles para todo el sistema client
@@ -43,10 +44,25 @@ function AtorizarSolicitud() {
     const [ver, setVer] = useState(false)
     const [descripcion, setDescripcion] = useState(false)
     const [texto, setTexto] = useState({ campo: null, valido: false })
+    const [mensaje, setMensaje] = useState(null)
+
+
+    /// SELLO DEL HOSPITAL
+    const [fileName, setFileName] = useState([]);
+    const [imagenActual, setImagenActual] = useState(null)
+
+
     useEffect(() => {
         listar()
         count()
-    }, [solicitud])
+    }, [0])
+
+    useEffect(() => {
+        setTimeout(() => {
+            setMensaje(null)
+        }, 10000)
+    }, [mensaje])
+
     const count = async () => {
         try {
             let list = []
@@ -85,6 +101,17 @@ function AtorizarSolicitud() {
 
     try {
 
+        const cargarSello = async () => {
+
+            axios.post(URL + '/laboratorio/all').then(json => {
+                if (json.data.resultado.length > 0) {
+                    setFileName(json.data.image)
+                }
+
+            })
+        }
+
+
         const token = localStorage.getItem("token")
         axios.interceptors.request.use(
             config => {
@@ -108,27 +135,27 @@ function AtorizarSolicitud() {
         }
 
         const autorizar = async (dato) => {
+            if (imagenActual !== null) {
 
-            let ok = window.confirm('AUTORIZAR SOLICITUD ?')
+                let ok = window.confirm('AUTORIZAR SOLICITUD ?')
+                if (ok === true && solicitud !== null && solicitud[0].estado === 0 && solicitud[0].codigoSol === dato) {
+                    let today = new Date()
+                    let fecha = today.toISOString().split('T')[0]
 
-            if (ok === true && solicitud !== null && solicitud[0].estado === 0 && solicitud[0].codigoSol === dato) {
+                    await axios.post(URL + '/solicitud/autorizar', {
 
-                let today = new Date()
-                let fecha = today.toISOString().split('T')[0]
+                        codigoSol: dato,
+                        sello: imagenActual.toString(),
+                        fecha: fecha + ' ' + new Date().toLocaleTimeString()
 
-                await axios.post(URL + '/solicitud/autorizar', {
+                    }).then(json => {
 
-                    codigoSol: dato,
-                    fecha: fecha + ' ' + new Date().toLocaleTimeString()
-
-                }).then(json => {
-
-                    // console.log(json.data)
-                    setSolicitud(json.data)
-                    // console.log(solicitud)
-                })
-
-            }
+                        // console.log(json.data)
+                        setSolicitud(json.data)
+                        // console.log(solicitud)
+                    })
+                }
+            } else { setMensaje('Seleccione el sello correspondiente') }
         }
         const eliminar = async () => {
 
@@ -203,6 +230,7 @@ function AtorizarSolicitud() {
             localStorage.setItem('tiempo', new Date().getMinutes())
         }
 
+
         return (
             <>
                 <div className="hold-transition sidebar-mini" onClick={handleClick} onKeyPress={handleKeyPress}>
@@ -258,17 +286,18 @@ function AtorizarSolicitud() {
                                                                         <td className="col-1 text-center">{c.ci}</td>
                                                                         <td className="col-2  ">{c.paciente}</td>
                                                                         <td className="col-2  ">{c.diagnostico}</td>
+
                                                                         {c.estado === 1 ? <td className="col-1 listEstado  text-center " style={{ color: "#198754" }}><FontAwesomeIcon icon={faCheck} /> </td> :
                                                                             <td className="col-1 listEstado text-center "><FontAwesomeIcon icon={faTimes} /> </td>}
 
                                                                         {c.recibidoLab === 1 ? <td className="col-1 listEstado  text-center" style={{ color: "#198754" }}><FontAwesomeIcon icon={faCheck} /> </td> :
                                                                             <td className="col-1 listEstado  text-center"><FontAwesomeIcon icon={faTimes} /> </td>}
 
-                                                                        {c.publisher === 1 ? <td className="col-1 text-center listEstado" style={{ color: "#198754" }}><FontAwesomeIcon icon={faCheck} /></td> :
+                                                                        {c.resultadoRecibido === 1 ? <td className="col-1 text-center listEstado" style={{ color: "#198754" }}><FontAwesomeIcon icon={faCheck} /></td> :
                                                                             <td className="col-1 text-center listEstado"><FontAwesomeIcon icon={faTimes} /> </td>}
 
                                                                         <td className="col-1  text-center">{c.nhc}</td>
-                                                                        <td className="col-1  text-center"> <div className='btnverSolicitud' onClick={() => verSolicitud(c.codigoSol)}><FontAwesomeIcon icon={faAngleRight} /> </div></td>
+                                                                        <td className="col-1  text-center"> <div className='btnverSolicitud' onClick={() => { verSolicitud(c.codigoSol); cargarSello() }}><FontAwesomeIcon icon={faAngleRight} /> </div></td>
                                                                     </tr>
                                                                 ))}
                                                             </tbody>
@@ -276,6 +305,12 @@ function AtorizarSolicitud() {
 
                                                             </tfoot>
                                                         </Table>
+                                                    </div>
+                                                    <div className="card-footer clearfix">
+                                                        <ul className="pagination pagination-sm m-0 float-right">
+                                                            <li className="page-item"><Link className="page-link" to="#" onClick={() => listar()} >&laquo;</Link></li>
+                                                            <li className="page-item"><Link className="page-link" to="#" onClick={() => listar()}>Reinicar</Link></li>
+                                                        </ul>
                                                     </div>
                                                 </div>
                                                 <div className="col-2">
@@ -320,11 +355,10 @@ function AtorizarSolicitud() {
 
                                         {
                                             ver === true &&
-                                            <div className='row paginaversolicitud'>
+                                            <div className='row paginaversolicitud mt-3' >
                                                 <div className='col-11'>
-                                                    {/* <div className='m'> */}
                                                     <label ><h6 className='text-center'>SOLICITUD DE EXAMEN DE LABORATORIO</h6></label >
-                                                    {/* </div> */}
+                                                    <h6 className='text-center' style={{ color: 'red' }}>{mensaje}</h6>
 
                                                     <div className='row'>
                                                         <div className='col-7'>
@@ -337,12 +371,13 @@ function AtorizarSolicitud() {
                                                                 </div>
                                                             </div>
 
+
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
-                                                                    <label> Seguro:  </label>
+                                                                    <label>Codigo solicitud: </label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label>{solicitud[0].seguro}</label>
+                                                                    <label>  {solicitud[0].codigoSol}</label>
                                                                 </div>
                                                             </div>
 
@@ -380,6 +415,14 @@ function AtorizarSolicitud() {
                                                             </div>
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
+                                                                    <label> Seguro:  </label>
+                                                                </div>
+                                                                <div className='col-7 fontContenido'>
+                                                                    <label>{solicitud[0].seguro}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div className='row verSolicitud'>
+                                                                <div className='col-5 fontTitulo'>
                                                                     <label>Fecha de solicitud: </label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
@@ -391,100 +434,87 @@ function AtorizarSolicitud() {
                                                                     <label>Hora de solicitud: </label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].horaSol}</label>
+                                                                    <label>  {solicitud[0].horaSol.split(':')[0] + ':' + solicitud[0].horaSol.split(':')[1]}</label>
                                                                 </div>
                                                             </div>
 
 
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Codigo solicitud: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].codigoSol}</label>
-                                                                </div>
-                                                            </div>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Resultado recibido: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].resultadoRecibido === 1 ? 'SI' : 'NO'}</label>
-                                                                </div>
-                                                            </div>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Estado: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].estado === 1 ? 'Autorizado' : 'Pendiente'}</label>
-                                                                </div>
-                                                            </div>
+
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
                                                                     <label>Fecha de autorizacion</label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].fechaHoraAutorizacion ? solicitud[0].fechaHoraAutorizacion.split('T')[0] + '  ' + solicitud[0].fechaHoraAutorizacion.split('T')[1].split('.')[0] : '.............'}</label>
+                                                                    <label>  {solicitud[0].fechaHoraAutorizacion ? solicitud[0].fechaHoraAutorizacion.split('T')[0] + '  ' + solicitud[0].fechaHoraAutorizacion.split('T')[1].split('.')[0].split(':')[0] + ':' + solicitud[0].fechaHoraAutorizacion.split('T')[1].split('.')[0].split(':')[1] : '-'}</label>
                                                                 </div>
                                                             </div>
 
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Items: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    {solicitud.map((item) => (
 
-                                                                        <label key={item.idItemServicio}>  {item.servicioSolicitado} </label >
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className='col-5'>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Solicitud Recepcionado:</label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label>  {solicitud[0].recibidoLab ? 'SI' : 'NO'}</label>
-                                                                </div>
-                                                            </div>
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
                                                                     <label>FECHA Y HORA DE RECEPCION:</label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label >  {solicitud[0].fechaRecLab ? solicitud[0].fechaRecLab + '   ' + solicitud[0].horaRecLab : '..............'} </label >
+                                                                    <label >  {solicitud[0].fechaRecLab ? solicitud[0].fechaRecLab.split('T')[0] + '   ' + solicitud[0].horaRecLab.split(':')[0] + ':' + solicitud[0].horaRecLab.split(':')[1] : '-'} </label >
                                                                 </div>
                                                             </div>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>hecha y hora Generacion del informe:</label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label >  {solicitud[0].fechaGenInforme ? solicitud[0].fechaHoraAutorizacion.split('T')[0] + '  ' + solicitud[0].fechaHoraAutorizacion.split('T')[1].split('.')[0] : '.............'} </label >
-                                                                </div>
-                                                            </div>
-                                                            <div className='row verSolicitud'>
-                                                                <div className='col-5 fontTitulo'>
-                                                                    <label>Resultado Disponible: </label>
-                                                                </div>
-                                                                <div className='col-7 fontContenido'>
-                                                                    <label >  {solicitud[0].publisher ? 'SI' : 'NO'} </label >
-                                                                </div>
-                                                            </div>
+
+
                                                             <div className='row verSolicitud'>
                                                                 <div className='col-5 fontTitulo'>
                                                                     <label>Fecha y hora publicacion resultado:</label>
                                                                 </div>
                                                                 <div className='col-7 fontContenido'>
-                                                                    <label >  {solicitud[0].fechaHoraPublicacionRes || '.............'} </label >
+                                                                    <label>  {solicitud[0].fechaHoraPublicacionRes ? solicitud[0].fechaHoraPublicacionRes.split('T')[0] + '         ' + solicitud[0].fechaHoraPublicacionRes.split('T')[1].split('.')[0].split(':')[0] + ':' + solicitud[0].fechaHoraPublicacionRes.split('T')[1].split('.')[0].split(':')[1] : '-'}</label>
                                                                 </div>
+                                                            </div>
+
+
+                                                            <div className='row verSolicitud'>
+                                                                <div className='col-5 fontTitulo'>
+                                                                    <label>hecha y hora Generacion del informe:</label>
+                                                                </div>
+                                                                <div className='col-7 fontContenido'>
+                                                                    <label >  {solicitud[0].fechaGenInforme ? solicitud[0].fechaGenInforme.split('T')[0] + '  ' + solicitud[0].fechaGenInforme.split('T')[1].split('.')[0].split(':')[0] + ' ' + solicitud[0].fechaGenInforme.split('T')[1].split('.')[0].split(':')[1] : '-'} </label >
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+
+                                                        <div className='col-5'>
+                                                            <div className='row verSolicitud'>
+                                                                <div className='col-5 fontTitulo'>
+                                                                    <label>SERVICIOS SOLICITADOS </label>
+                                                                </div>
+                                                                <div className='col-7 fontContenido'>
+                                                                    {solicitud.map((item) => (
+
+                                                                        item.encabezado === 1 && <label key={item.idItemServicio}>  {item.servicioSolicitado} </label >
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                            <div style={{ margin: '30px' }}>
+
+                                                                {imagenActual ? <img src={URL + '/' + imagenActual} alt={imagenActual} style={{ height: '150px', width: '170px' }} /> :
+                                                                    <p className='fontContenido'>Seleccione el Sello Correspondiente</p>}
+                                                            </div>
+                                                            <div className='sliderimg'>
+
+                                                                {
+                                                                    fileName.map(img => (
+                                                                        <div key={img} className='itemImg' >
+
+                                                                            <img src={URL + '/' + img} alt={img} className='tamimg' onClick={() => setImagenActual(img)} />
+
+                                                                        </div>
+                                                                    ))
+                                                                }
                                                             </div>
 
                                                         </div>
                                                     </div>
+
                                                 </div>
                                                 <div className='col-1 check-r'>
                                                     <div className='row contendorButton'>
@@ -503,31 +533,33 @@ function AtorizarSolicitud() {
 
                                         }
                                         <Modal isOpen={descripcion}>
-                                            <ModalHeader>
-                                                <div>
-                                                    <h3>Añadir Descripcion</h3>
-                                                </div>
-                                            </ModalHeader>
                                             <ModalBody>
                                                 <form>
                                                     <div className="row">
+                                                        <div>
+                                                            <h6>AÑADIR DESCRPCION</h6>
+                                                        </div>
                                                         <div className="form-group col-9 mb-2 mt-1 pl-1">
                                                             <ComponenteInputUser
                                                                 estado={texto}
                                                                 cambiarEstado={setTexto}
                                                                 name="servicio"
-                                                                placeholder="AREA DE SERVICIO"
+                                                                placeholder="motivo"
                                                                 ExpresionRegular={INPUT.DIRECCION}  //expresion regular
-                                                                etiqueta='Item'
+                                                                etiqueta='Motivo'
                                                             />
                                                         </div>
                                                     </div>
                                                 </form>
-                                                <ModalFooter>
-                                                    <button className='btn btn-success' onClick={() => eliminar()}>eliminar</button>
-                                                    <button className='btn btn-danger' onClick={() => { setDescripcion(false); setTexto({ campo: null, valido: false }) }} >Cancelar</button>
-                                                </ModalFooter>
+
                                             </ModalBody>
+                                            <div className="card-footer clearfix" style={{ paddingTop: '0px' }}>
+                                                <ul className="pagination pagination-sm m-0 float-right">
+                                                    <button className='info' onClick={() => eliminar()} style={{ marginRight: '5px' }}>eliminar</button>
+                                                    <button className='danger' onClick={() => { setDescripcion(false); setTexto({ campo: null, valido: false }) }} style={{ marginRight: '5px' }}>Cancelar</button>
+
+                                                </ul>
+                                            </div>
                                         </Modal>
                                     </div>
                                 </div>

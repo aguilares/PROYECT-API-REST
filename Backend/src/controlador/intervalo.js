@@ -1,11 +1,24 @@
 import { Router } from "express"
 import { Intervalo } from "../modelo/intervalo.js"
-import { insertar, editar, eliminar,  listar } from '../validacion/intervalo.js'
+import { insertar, editar, eliminar,  listar,listCodigo } from '../validacion/intervalo.js'
 
 
 const rutas = Router()
 const intervalo_ = new Intervalo()
 
+rutas.post("/listarporcodigo", listCodigo, async (req, res) => {
+    console.log(req.body.codigo)
+
+    try {
+        const resultado = await intervalo_.listarPorCodigo(req.body.codigo)
+        
+        return res.json(resultado)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send(error)
+    }
+
+})
 rutas.post("/all", listar, async (req, res) => {
     // console.log(req.body.id)
 
